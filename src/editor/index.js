@@ -1,8 +1,12 @@
 import LexicalComposer from "@lexical/react/LexicalComposer";
-import RichTextPlugin from "@lexical/react/LexicalRichTextPlugin";
 import ContentEditable from "@lexical/react/LexicalContentEditable";
-import { LinkNode, AutoLinkNode } from "@lexical/link";
+
+import RichTextPlugin from "@lexical/react/LexicalRichTextPlugin";
 import LinkPlugin from "@lexical/react/LexicalLinkPlugin";
+import ListPlugin from "@lexical/react/LexicalListPlugin";
+
+import { LinkNode, AutoLinkNode } from "@lexical/link";
+import { ListItemNode, ListNode } from "@lexical/list";
 
 import theme from "./theme";
 
@@ -16,7 +20,7 @@ const editorConfig = {
     console.error("[lexical error]", e);
     // Not throwing here allows lexical to try to handle the error gracefully without losing user data.
   },
-  nodes: [LinkNode, AutoLinkNode],
+  nodes: [LinkNode, AutoLinkNode, ListNode, ListItemNode],
 };
 
 export default function Editor() {
@@ -29,6 +33,7 @@ export default function Editor() {
           />
           <LinkPlugin />
           <AutoLinkPlugin />
+          <ListPlugin />
         </div>
         <ToolbarPlugin />
       </div>

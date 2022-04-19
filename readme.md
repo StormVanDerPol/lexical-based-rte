@@ -6,7 +6,7 @@
 - [ ] block select: paragraph, heading, sub-heading
 - [ ] quotes
 - [x] links w/ editing text & url
-- [ ] lists
+- [x] lists
 - [ ] images
 - [ ] history
 - [x] soft-breaks + softbreak button

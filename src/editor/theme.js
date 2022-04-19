@@ -11,14 +11,17 @@ export default theme = {
   //     h4: "",
   //     h5: "",
   //   },
-  //   list: {
-  //     nested: {
-  //       listitem: "",
-  //     },
-  //     ol: "",
-  //     ul: "",
-  //     listitem: "",
-  //   },
+
+  // potentially we can fix list item maker styles for admin editor in a seperate theme.
+
+  list: {
+    // nested: {
+    //   listitem: "",
+    // },
+    ol: "pl-5 list-decimal",
+    ul: "pl-5 list-disc",
+    // listitem: "",
+  },
   //   image: "",
   link: "underline text-blue-500 hover:text-blue-400 transition-colors",
   text: {

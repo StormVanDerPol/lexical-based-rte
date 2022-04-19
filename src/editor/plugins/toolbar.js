@@ -12,6 +12,11 @@ import {
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 
+import {
+  INSERT_ORDERED_LIST_COMMAND,
+  INSERT_UNORDERED_LIST_COMMAND,
+} from "@lexical/list";
+
 import { mergeRegister } from "@lexical/utils";
 
 import $getSelectedNode from "../utils/$getSelectedNode";
@@ -281,6 +286,20 @@ export default function ToolbarPlugin() {
         className="button secondary lg"
       >
         Line break
+      </button>
+
+      <button
+        onClick={() => editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND)}
+        className="button secondary lg"
+      >
+        UL
+      </button>
+
+      <button
+        onClick={() => editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND)}
+        className="button secondary lg"
+      >
+        OL
       </button>
     </div>
   );
