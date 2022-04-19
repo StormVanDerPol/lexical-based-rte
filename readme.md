@@ -8,7 +8,7 @@
 - [x] links w/ editing text & url
 - [x] lists
 - [ ] images
-- [ ] history
+- [x] history
 - [x] soft-breaks + softbreak button
 - [ ] tooltips for everything
 - [ ] justify every block node or none at all

@@ -4,6 +4,7 @@ import ContentEditable from "@lexical/react/LexicalContentEditable";
 import RichTextPlugin from "@lexical/react/LexicalRichTextPlugin";
 import LinkPlugin from "@lexical/react/LexicalLinkPlugin";
 import ListPlugin from "@lexical/react/LexicalListPlugin";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 
 import { LinkNode, AutoLinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
@@ -34,6 +35,7 @@ export default function Editor() {
           <LinkPlugin />
           <AutoLinkPlugin />
           <ListPlugin />
+          <HistoryPlugin />
         </div>
         <ToolbarPlugin />
       </div>

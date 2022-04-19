@@ -7,7 +7,9 @@ import {
   CAN_UNDO_COMMAND,
   FORMAT_TEXT_COMMAND,
   INSERT_LINE_BREAK_COMMAND,
+  REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
+  UNDO_COMMAND,
 } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
@@ -300,6 +302,22 @@ export default function ToolbarPlugin() {
         className="button secondary lg"
       >
         OL
+      </button>
+
+      <button
+        disabled={!canUndo}
+        onClick={() => editor.dispatchCommand(UNDO_COMMAND)}
+        className="button secondary lg"
+      >
+        undo
+      </button>
+
+      <button
+        disabled={!canRedo}
+        onClick={() => editor.dispatchCommand(REDO_COMMAND)}
+        className="button secondary lg"
+      >
+        redo
       </button>
     </div>
   );
