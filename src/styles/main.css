@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.editor-inner {
+  min-height: 10rem;
+}
+
+.editor-inner [contenteditable="true"] {
+  outline: none;
+}
+
+.button {
+  min-width: 2.5rem;
+  @apply inline-block px-3 py-1 rounded text-sm transition-colors border border-transparent;
+}
+
+.button.primary {
+  @apply bg-blue-600 text-white hover:bg-blue-400;
+}
+
+.button.secondary {
+  @apply hover:border-blue-600 hover:bg-blue-50 bg-gray-100;
+}
+
+.button.lg {
+  @apply text-lg;
+}
