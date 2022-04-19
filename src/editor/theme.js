@@ -2,7 +2,7 @@ export default theme = {
   //   ltr: "",
   //   rtl: "",
   //   placeholder: "",
-  //   paragraph: "",
+  paragraph: "mb-4",
   //   quote: "",
   //   heading: {
   //     h1: "",

@@ -5,11 +5,11 @@
 - [x] rich text w/ bold, italic, underline.
 - [ ] block select: paragraph, heading, sub-heading
 - [ ] quotes
-- [ ] links w/ editing text & url
+- [x] links w/ editing text & url
 - [ ] lists
 - [ ] images
 - [ ] history
-- [ ] soft-breaks + softbreak button
+- [x] soft-breaks + softbreak button
 - [ ] tooltips for everything
 - [ ] justify every block node or none at all
 - [ ] CFE: uneditable void nodes whose content are external state completely unrelated to the text editor itself & buttons to insert these.

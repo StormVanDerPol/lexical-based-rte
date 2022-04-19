@@ -6,6 +6,7 @@ import {
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
   FORMAT_TEXT_COMMAND,
+  INSERT_LINE_BREAK_COMMAND,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -274,6 +275,13 @@ export default function ToolbarPlugin() {
 
       {isLink &&
         createPortal(<FloatingLinkEditor editor={editor} />, document.body)}
+
+      <button
+        onClick={() => editor.dispatchCommand(INSERT_LINE_BREAK_COMMAND)}
+        className="button secondary lg"
+      >
+        Line break
+      </button>
     </div>
   );
 }
