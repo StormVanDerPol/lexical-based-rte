@@ -19,8 +19,7 @@ const editorConfig = {
 export default function Editor() {
   return (
     <LexicalComposer initialConfig={editorConfig}>
-      {/* editor-inner class is responsible for styling RTE contents */}
-      <div className="editor-inner relative bg-gray-100 rounded-md border border-transparent  focus-within:bg-blue-50 focus-within:border-blue-700 transition-colors">
+      <div className="relative bg-gray-100 rounded-md border border-transparent  focus-within:bg-blue-50 focus-within:border-blue-700 transition-colors">
         <div className="p-2 mb-12">
           <RichTextPlugin contentEditable={<ContentEditable />} />
           <LinkPlugin />
