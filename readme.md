@@ -7,10 +7,9 @@
 - [x] quotes
 - [x] links w/ editing text & url
 - [x] lists
-- [ ] images
+- [x] images
 - [x] history
 - [x] soft-breaks + softbreak button
-- [ ] tooltips for everything
 - [ ] !!! justify every block node or none at all
 - [ ] !!! CFE: uneditable void nodes whose content are external state completely unrelated to the text editor itself & buttons to insert these.
 - [ ] !!! "controlled" behaviour (reset to value functionality)
