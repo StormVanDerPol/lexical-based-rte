@@ -3,8 +3,8 @@
 ### reqs:
 
 - [x] rich text w/ bold, italic, underline.
-- [ ] block select: paragraph, heading, sub-heading
-- [ ] quotes
+- [x] block select: paragraph, heading, sub-heading
+- [x] quotes
 - [x] links w/ editing text & url
 - [x] lists
 - [ ] images
