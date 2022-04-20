@@ -269,6 +269,7 @@ function BlockSelect({ editor, currentBlock }) {
 
   return (
     <select
+      className="button secondary outline-none"
       value={currentBlock}
       onChange={(e) =>
         blockTypes.find(({ type }) => type === e.target.value).create()
@@ -456,6 +457,7 @@ export default function ToolbarPlugin() {
             src: "https://www.thiscatdoesnotexist.com",
           })
         }
+        className="button secondary lg"
       >
         image
       </button>
