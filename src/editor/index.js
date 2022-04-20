@@ -8,6 +8,7 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 
 import { LinkNode, AutoLinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
+import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 
 import theme from "./theme";
 
@@ -21,7 +22,14 @@ const editorConfig = {
     console.error("[lexical error]", e);
     // Not throwing here allows lexical to try to handle the error gracefully without losing user data.
   },
-  nodes: [LinkNode, AutoLinkNode, ListNode, ListItemNode],
+  nodes: [
+    LinkNode,
+    AutoLinkNode,
+    ListNode,
+    ListItemNode,
+    QuoteNode,
+    HeadingNode,
+  ],
 };
 
 export default function Editor() {

@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
+  $createParagraphNode,
   $getSelection,
   $isRangeSelection,
   CAN_REDO_COMMAND,
@@ -13,13 +14,21 @@ import {
 } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
-
 import {
+  $createHeadingNode,
+  $createQuoteNode,
+  $isHeadingNode,
+} from "@lexical/rich-text";
+import { $wrapLeafNodesInElements } from "@lexical/selection";
+import {
+  ListNode,
+  $isListNode,
+  REMOVE_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
   INSERT_UNORDERED_LIST_COMMAND,
 } from "@lexical/list";
 
-import { mergeRegister } from "@lexical/utils";
+import { mergeRegister, $getNearestNodeOfType } from "@lexical/utils";
 
 import $getSelectedNode from "../utils/$getSelectedNode";
 
@@ -181,6 +190,98 @@ function FloatingLinkEditor({ editor }) {
   );
 }
 
+function BlockSelect({ editor, currentBlock }) {
+  const blockTypes = [
+    {
+      type: "paragraph",
+      create: () => {
+        if (currentBlock === "paragraph") return;
+
+        editor.update(() => {
+          const selection = $getSelection();
+          if ($isRangeSelection(selection)) {
+            $wrapLeafNodesInElements(selection, () => $createParagraphNode());
+          }
+        });
+      },
+    },
+    {
+      type: "h1",
+      create: () => {
+        if (currentBlock === "h1") return;
+
+        editor.update(() => {
+          const selection = $getSelection();
+          if ($isRangeSelection(selection)) {
+            $wrapLeafNodesInElements(selection, () => $createHeadingNode("h1"));
+          }
+        });
+      },
+    },
+    {
+      type: "h2",
+      create: () => {
+        if (currentBlock === "h2") return;
+
+        editor.update(() => {
+          const selection = $getSelection();
+          if ($isRangeSelection(selection)) {
+            $wrapLeafNodesInElements(selection, () => $createHeadingNode("h2"));
+          }
+        });
+      },
+    },
+    {
+      type: "quote",
+      create: () => {
+        if (currentBlock === "quote") return;
+
+        editor.update(() => {
+          const selection = $getSelection();
+          if ($isRangeSelection(selection)) {
+            $wrapLeafNodesInElements(selection, () => $createQuoteNode());
+          }
+        });
+      },
+    },
+    {
+      type: "ol",
+      create: () => {
+        if (currentBlock === "ol") {
+          editor.dispatchCommand(REMOVE_LIST_COMMAND);
+        } else {
+          editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND);
+        }
+      },
+    },
+    {
+      type: "ul",
+      create: () => {
+        if (currentBlock === "ul") {
+          editor.dispatchCommand(REMOVE_LIST_COMMAND);
+        } else {
+          editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND);
+        }
+      },
+    },
+  ];
+
+  return (
+    <select
+      value={currentBlock}
+      onChange={(e) =>
+        blockTypes.find(({ type }) => type === e.target.value).create()
+      }
+    >
+      {blockTypes.map(({ type }) => (
+        <option key={type} value={type}>
+          {type}
+        </option>
+      ))}
+    </select>
+  );
+}
+
 export default function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
 
@@ -191,9 +292,35 @@ export default function ToolbarPlugin() {
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
 
+  const [currentBlock, setCurrentBlock] = useState("bullet list");
+  const [selectedElementKey, setSelectedElementKey] = useState(null);
+
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
     if ($isRangeSelection(selection)) {
+      // ---  DETECT BLOCK NODE TYPE ---
+      const anchorNode = selection.anchor.getNode();
+      const element =
+        anchorNode.getKey() === "root"
+          ? anchorNode
+          : anchorNode.getTopLevelElementOrThrow();
+      const elementKey = element.getKey();
+      const elementDOM = editor.getElementByKey(elementKey);
+      if (elementDOM !== null) {
+        setSelectedElementKey(elementKey);
+        if ($isListNode(element)) {
+          const parentList = $getNearestNodeOfType(anchorNode, ListNode);
+          const type = parentList ? parentList.getTag() : element.getTag();
+          setCurrentBlock(type);
+        } else {
+          const type = $isHeadingNode(element)
+            ? element.getTag()
+            : element.getType();
+          setCurrentBlock(type);
+        }
+      }
+      // --- --- ---
+
       setIsBold(selection.hasFormat("bold"));
       setIsItalic(selection.hasFormat("italic"));
       setIsUnderline(selection.hasFormat("underline"));
@@ -210,7 +337,7 @@ export default function ToolbarPlugin() {
 
   const insertLink = useCallback(() => {
     if (!isLink) {
-      editor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://www.urmomgay.com");
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
     } else {
       editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
     }
@@ -252,6 +379,8 @@ export default function ToolbarPlugin() {
 
   return (
     <div className="absolute bottom-0 p-2">
+      <BlockSelect editor={editor} currentBlock={currentBlock} />
+
       <button
         onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")}
         className={`button ${isBold ? "primary" : "secondary"} lg font-bold`}
