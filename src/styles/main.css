@@ -18,3 +18,7 @@
 .button.lg {
   @apply text-lg;
 }
+
+.button.sm {
+  @apply text-xs px-2 py-1
+}

@@ -5,6 +5,7 @@ import RichTextPlugin from "@lexical/react/LexicalRichTextPlugin";
 import LinkPlugin from "@lexical/react/LexicalLinkPlugin";
 import ListPlugin from "@lexical/react/LexicalListPlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import AutoFocusPlugin from "@lexical/react/LexicalAutoFocusPlugin";
 
 import { LinkNode, AutoLinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
@@ -15,6 +16,10 @@ import theme from "./theme";
 import TreeViewPlugin from "./plugins/treeView";
 import ToolbarPlugin from "./plugins/toolbar";
 import AutoLinkPlugin from "./plugins/autoLink";
+import DataViewPlugin from "./plugins/dataView";
+import ImagesPlugin from "./plugins/imagesPlugin";
+
+import { ImageNode } from "./nodes/imageNode";
 
 const editorConfig = {
   theme,
@@ -29,6 +34,7 @@ const editorConfig = {
     ListItemNode,
     QuoteNode,
     HeadingNode,
+    ImageNode,
   ],
 };
 
@@ -38,16 +44,24 @@ export default function Editor() {
       <div className="relative bg-gray-100 rounded-md border border-transparent focus-within:bg-blue-50 focus-within:border-blue-700 transition-colors">
         <div className="p-2 mb-12">
           <RichTextPlugin
-            contentEditable={<ContentEditable className="outline-none" />}
+            contentEditable={
+              <ContentEditable
+                className="outline-none resize-none"
+                style={{ minHeight: "150px", tabSize: "1" }}
+              />
+            }
           />
           <LinkPlugin />
           <AutoLinkPlugin />
           <ListPlugin />
           <HistoryPlugin />
+          <AutoFocusPlugin />
+          <ImagesPlugin />
         </div>
         <ToolbarPlugin />
       </div>
       <TreeViewPlugin />
+      <DataViewPlugin />
     </LexicalComposer>
   );
 }
