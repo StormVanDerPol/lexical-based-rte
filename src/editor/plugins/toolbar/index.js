@@ -30,8 +30,8 @@ import {
 
 import { mergeRegister, $getNearestNodeOfType } from "@lexical/utils";
 
-import $getSelectedNode from "../utils/$getSelectedNode";
-import { INSERT_IMAGE_COMMAND } from "./imagesPlugin";
+import $getSelectedNode from "../../utils/$getSelectedNode";
+import { INSERT_IMAGE_COMMAND } from "../imagesPlugin";
 
 const LowPriority = 1;
 
@@ -380,7 +380,7 @@ export default function ToolbarPlugin() {
   }, [editor, updateToolbar]);
 
   return (
-    <div className="absolute bottom-0 p-2 border-t border-gray-300 w-full">
+    <>
       <BlockSelect editor={editor} currentBlock={currentBlock} />
 
       <button
@@ -461,6 +461,6 @@ export default function ToolbarPlugin() {
       >
         image
       </button>
-    </div>
+    </>
   );
 }

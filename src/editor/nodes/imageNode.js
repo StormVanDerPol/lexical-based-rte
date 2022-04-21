@@ -21,6 +21,10 @@ export class ImageNode extends DecoratorNode {
     return div;
   }
 
+  updateDOM() {
+    return false;
+  }
+
   decorate() {
     return <img src={this.__src} />;
   }
