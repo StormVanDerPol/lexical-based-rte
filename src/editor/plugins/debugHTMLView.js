@@ -19,7 +19,10 @@ export default function DebugHTMLView() {
     <div className="my-5 p-2 rounded bg-gray-200 shadow-md border border-gray-400">
       <div className="text-gray-600 text-sm mb-5">rendered HTML:</div>
 
+      <style></style>
+
       <div
+        className="rendered-rich-text"
         dangerouslySetInnerHTML={{
           __html: HTML,
         }}

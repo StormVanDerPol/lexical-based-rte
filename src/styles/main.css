@@ -22,3 +22,20 @@
 .button.sm {
   @apply text-xs px-2 py-1;
 }
+
+/* debug html rendering */
+.rendered-rich-text p {
+  @apply mb-2;
+}
+
+.rendered-rich-text ol {
+  @apply pl-5 list-decimal;
+}
+
+.rendered-rich-text ul {
+  @apply pl-5 list-disc;
+}
+
+.rendered-rich-text a {
+  @apply text-blue-500 hover:text-blue-400 underline;
+}

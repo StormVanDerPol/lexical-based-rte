@@ -71,12 +71,27 @@ export default function LexicalToHTML(nodeMap) {
     const children = node?.__children;
 
     // element node
-    if (Array.isArray(children) && children.length) {
-      const serializedChildren = children.map((n) => serialize(nodeMap.get(n))).join("");
+    if (Array.isArray(children)) {
+      const serializedChildren = children.map((n) => serialize(nodeMap.get(n))).join("") || "";
 
       switch (type) {
         case "paragraph":
-          return `<p>${serializedChildren}</p>`;
+          return `<p>${serializedChildren || "\u200B"}</p>`;
+        case "listitem":
+          return `<li>${serializedChildren}</li>`;
+        case "list": {
+          const tag = node.__tag;
+
+          if (tag === "ul") return `<ul>${serializedChildren}</ul>`;
+          if (tag === "ol") return `<ol>${serializedChildren}</ol>`;
+
+          throw new Error(`[lexical to html]: list node  has wrong tag (${tag})`);
+        }
+
+        case "link": {
+          const url = node.__url;
+          return `<a href="${url}">${serializedChildren}</a>`;
+        }
 
         default:
           return serializedChildren;
@@ -90,6 +105,11 @@ export default function LexicalToHTML(nodeMap) {
         return `<span data-type="custom-format">${customFormatKey}</span>`;
       }
     }
+
+    if (type === "linebreak") return "<br>";
+
+    console.warn(`[lexical to html]: no serialization conditions were met for node ${node.__key}`);
+    return "";
   }
 
   return serialize(root);
