@@ -1,17 +1,8 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {
-  $getSelection,
-  $isRangeSelection,
-  $isRootNode,
-  COMMAND_PRIORITY_EDITOR,
-  createCommand,
-} from "lexical";
+import { $getSelection, $isRangeSelection, $isRootNode, COMMAND_PRIORITY_EDITOR, createCommand } from "lexical";
 import { useEffect, createContext, useContext, useRef, useState } from "react";
 
-import {
-  $createCustomFormatNode,
-  CustomFormatNode,
-} from "../nodes/customFormatNode";
+import { $createCustomFormatNode, CustomFormatNode } from "../nodes/customFormatNode";
 
 export const INSERT_CUSTOMFORMAT_COMMAND = createCommand();
 
@@ -26,7 +17,7 @@ export function CustomFormatToolbarPlugin({ customFormats }) {
         ...new Set(
           Object.values(editor.getDecorators())
             .map(({ props }) => props.customFormatKey)
-            .filter((c) => c)
+            .filter((c) => c),
         ),
       ]);
     });
@@ -61,11 +52,7 @@ export function CustomFormatToolbarPlugin({ customFormats }) {
 const CustomFormatContext = createContext({});
 
 export function CustomFormatContextProvider({ value, children }) {
-  return (
-    <CustomFormatContext.Provider value={value}>
-      {children}
-    </CustomFormatContext.Provider>
-  );
+  return <CustomFormatContext.Provider value={value}>{children}</CustomFormatContext.Provider>;
 }
 
 export const useCustomFormats = () => {
@@ -77,9 +64,7 @@ export default function CustomFormatPlugin() {
 
   useEffect(() => {
     if (!editor.hasNodes([CustomFormatNode])) {
-      throw new Error(
-        "Custom format plugin: CustomFormatNode not registered on editor"
-      );
+      throw new Error("Custom format plugin: CustomFormatNode not registered on editor");
     }
 
     return editor.registerCommand(
@@ -90,15 +75,12 @@ export default function CustomFormatPlugin() {
           if ($isRootNode(selection.anchor.getNode())) {
             selection.insertParagraph();
           }
-          const customFormatNode = $createCustomFormatNode(
-            payload.customFormatKey,
-            payload.value
-          );
+          const customFormatNode = $createCustomFormatNode(payload.customFormatKey, payload.value);
           selection.insertNodes([customFormatNode]);
         }
         return true;
       },
-      COMMAND_PRIORITY_EDITOR
+      COMMAND_PRIORITY_EDITOR,
     );
   }, [editor]);
   return null;

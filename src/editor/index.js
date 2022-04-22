@@ -18,17 +18,15 @@ import theme from "./theme";
 import TreeViewPlugin from "./plugins/treeView";
 import ToolbarPlugin from "./plugins/toolbar";
 import AutoLinkPlugin from "./plugins/autoLink";
-import DataViewPlugin from "./plugins/dataView";
+import DebugHTMLView from "./plugins/debugHTMLView";
 import ImagesPlugin from "./plugins/imagesPlugin";
 
 import { ImageNode } from "./nodes/imageNode";
 import { CustomFormatNode } from "./nodes/customFormatNode";
-import CustomFormatPlugin, {
-  CustomFormatContextProvider,
-  CustomFormatToolbarPlugin,
-} from "./plugins/customFormatPlugin";
+import CustomFormatPlugin, { CustomFormatContextProvider, CustomFormatToolbarPlugin } from "./plugins/customFormatPlugin";
 import ToolbarContainer from "./plugins/toolbar/toolbarContainer";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import OnChangePlugin from "./plugins/onChangePlugin";
+import LexicalToHTML from "./utils/htmlSerializer";
 
 const editorConfig = {
   theme,
@@ -36,16 +34,7 @@ const editorConfig = {
     console.error("[lexical error]", e);
     // Not throwing here allows lexical to try to handle the error gracefully without losing user data.
   },
-  nodes: [
-    LinkNode,
-    AutoLinkNode,
-    ListNode,
-    ListItemNode,
-    QuoteNode,
-    HeadingNode,
-    ImageNode,
-    CustomFormatNode,
-  ],
+  nodes: [LinkNode, AutoLinkNode, ListNode, ListItemNode, QuoteNode, HeadingNode, ImageNode, CustomFormatNode],
 };
 
 function CustomFormatInputs({ customFormats, setCustomFormats }) {
@@ -64,12 +53,7 @@ function CustomFormatInputs({ customFormats, setCustomFormats }) {
         <label className="text-xs text-gray-500 block" htmlFor={key}>
           {key}
         </label>
-        <input
-          className="outline-none border border-blue-500 bg-gray-50 rounded"
-          id={key}
-          value={value}
-          onChange={(e) => setCustomFormat(key, e.target.value)}
-        />
+        <input className="outline-none border border-blue-500 bg-gray-50 rounded" id={key} value={value} onChange={(e) => setCustomFormat(key, e.target.value)} />
       </div>
     );
   });
@@ -100,22 +84,12 @@ export default function Editor() {
   return (
     <>
       <LexicalComposer initialConfig={editorConfig}>
-        <CustomFormatInputs
-          customFormats={customFormats}
-          setCustomFormats={setCustomFormats}
-        />
+        <CustomFormatInputs customFormats={customFormats} setCustomFormats={setCustomFormats} />
 
         <CustomFormatContextProvider value={customFormats}>
           <div className="relative bg-gray-100 rounded-md border border-transparent focus-within:bg-blue-50 focus-within:border-blue-700 transition-colors">
             <div className="p-2 mb-24">
-              <RichTextPlugin
-                contentEditable={
-                  <ContentEditable
-                    className="outline-none resize-none"
-                    style={{ minHeight: "150px", tabSize: "1" }}
-                  />
-                }
-              />
+              <RichTextPlugin contentEditable={<ContentEditable className="outline-none resize-none" style={{ minHeight: "150px", tabSize: "1" }} />} />
               <CustomFormatPlugin />
             </div>
             <ToolbarContainer>
@@ -131,7 +105,12 @@ export default function Editor() {
         <AutoFocusPlugin />
         <ImagesPlugin />
         <TreeViewPlugin />
-        <DataViewPlugin />
+        <OnChangePlugin
+          handler={(editorState) => {
+            console.log(LexicalToHTML(editorState._nodeMap));
+          }}
+        />
+        <DebugHTMLView />
       </LexicalComposer>
     </>
   );

@@ -10,18 +10,13 @@ export default function TreeViewPlugin() {
   return (
     <div className="overflow-hidden rounded-md mt-4">
       <div className="p-2 bg-gray-200">
-        <button
-          className="button primary sm"
-          onClick={() => setIsOpen((b) => !b)}
-        >
+        <button className="button primary sm" onClick={() => setIsOpen((b) => !b)}>
           toggle tree view
         </button>
       </div>
 
       <LexicalTreeView
-        viewClassName={`bg-gray-900 text-white text-xs ${
-          isOpen ? "h-0" : "p-4"
-        }`}
+        viewClassName={`bg-gray-900 text-white text-xs ${isOpen ? "h-0" : "p-4"}`}
         timeTravelPanelClassName="flex justify-between mt-2"
         timeTravelButtonClassName="button primary sm mb-2 block ml-auto"
         timeTravelPanelSliderClassName="flex-1 mx-2 block"

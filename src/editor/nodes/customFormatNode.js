@@ -8,11 +8,7 @@ function CustomFormatElement({ customFormatKey }) {
 
   const { value } = customFormats.find(({ key }) => key === customFormatKey);
 
-  return (
-    <span className="cursor-pointer border-b border-b-gray-500 hover:border-b-blue-500">
-      {value}
-    </span>
-  );
+  return <span className="cursor-pointer border-b border-b-gray-500 hover:border-b-blue-500">{value}</span>;
 }
 
 export class CustomFormatNode extends DecoratorNode {
@@ -21,11 +17,7 @@ export class CustomFormatNode extends DecoratorNode {
   }
 
   static clone(node) {
-    return new CustomFormatNode(
-      node.__customFormatKey,
-      node.__value,
-      node.__key
-    );
+    return new CustomFormatNode(node.__customFormatKey, node.__value, node.__key);
   }
 
   constructor(customFormatKey, value, key) {
@@ -44,12 +36,7 @@ export class CustomFormatNode extends DecoratorNode {
   }
 
   decorate() {
-    return (
-      <CustomFormatElement
-        customFormatKey={this.__customFormatKey}
-        value={this.__value}
-      />
-    );
+    return <CustomFormatElement customFormatKey={this.__customFormatKey} value={this.__value} />;
   }
 }
 

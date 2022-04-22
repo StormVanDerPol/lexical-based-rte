@@ -1,11 +1,5 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {
-  $getSelection,
-  $isRangeSelection,
-  $isRootNode,
-  COMMAND_PRIORITY_EDITOR,
-  createCommand,
-} from "lexical";
+import { $getSelection, $isRangeSelection, $isRootNode, COMMAND_PRIORITY_EDITOR, createCommand } from "lexical";
 import { useEffect } from "react";
 
 import { $createImageNode, ImageNode } from "../nodes/imageNode";
@@ -33,7 +27,7 @@ export default function ImagesPlugin() {
         }
         return true;
       },
-      COMMAND_PRIORITY_EDITOR
+      COMMAND_PRIORITY_EDITOR,
     );
   }, [editor]);
   return null;

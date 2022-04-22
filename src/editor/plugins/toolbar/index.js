@@ -14,19 +14,9 @@ import {
 } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
-import {
-  $createHeadingNode,
-  $createQuoteNode,
-  $isHeadingNode,
-} from "@lexical/rich-text";
+import { $createHeadingNode, $createQuoteNode, $isHeadingNode } from "@lexical/rich-text";
 import { $wrapLeafNodesInElements } from "@lexical/selection";
-import {
-  ListNode,
-  $isListNode,
-  REMOVE_LIST_COMMAND,
-  INSERT_ORDERED_LIST_COMMAND,
-  INSERT_UNORDERED_LIST_COMMAND,
-} from "@lexical/list";
+import { ListNode, $isListNode, REMOVE_LIST_COMMAND, INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from "@lexical/list";
 
 import { mergeRegister, $getNearestNodeOfType } from "@lexical/utils";
 
@@ -43,9 +33,7 @@ function positionEditorElement(editor, rect) {
   } else {
     editor.style.opacity = "1";
     editor.style.top = `${rect.top + rect.height + window.pageYOffset + 10}px`;
-    editor.style.left = `${
-      rect.left + window.pageXOffset - editor.offsetWidth / 2 + rect.width / 2
-    }px`;
+    editor.style.left = `${rect.left + window.pageXOffset - editor.offsetWidth / 2 + rect.width / 2}px`;
   }
 }
 
@@ -77,12 +65,7 @@ function FloatingLinkEditor({ editor }) {
     const activeElement = document.activeElement;
 
     const rootElement = editor.getRootElement();
-    if (
-      selection !== null &&
-      !nativeSelection.isCollapsed &&
-      rootElement !== null &&
-      rootElement.contains(nativeSelection.anchorNode)
-    ) {
+    if (selection !== null && !nativeSelection.isCollapsed && rootElement !== null && rootElement.contains(nativeSelection.anchorNode)) {
       const domRange = nativeSelection.getRangeAt(0);
       let rect;
       if (nativeSelection.anchorNode === rootElement) {
@@ -121,8 +104,8 @@ function FloatingLinkEditor({ editor }) {
           updateLinkEditor();
           return true;
         },
-        LowPriority
-      )
+        LowPriority,
+      ),
     );
   }, [editor, updateLinkEditor]);
 
@@ -148,10 +131,7 @@ function FloatingLinkEditor({ editor }) {
   }, [lastSelection, linkUrl, editor]);
 
   return (
-    <div
-      ref={editorRef}
-      className="bg-gray-50 shadow-md p-2 border border-gray-200 rounded fixed"
-    >
+    <div ref={editorRef} className="bg-gray-50 shadow-md p-2 border border-gray-200 rounded fixed">
       <input
         data-floating-link-editor
         ref={inputRef}
@@ -268,13 +248,7 @@ function BlockSelect({ editor, currentBlock }) {
   ];
 
   return (
-    <select
-      className="button secondary outline-none"
-      value={currentBlock}
-      onChange={(e) =>
-        blockTypes.find(({ type }) => type === e.target.value).create()
-      }
-    >
+    <select className="button secondary outline-none" value={currentBlock} onChange={(e) => blockTypes.find(({ type }) => type === e.target.value).create()}>
       {blockTypes.map(({ type }) => (
         <option key={type} value={type}>
           {type}
@@ -302,10 +276,7 @@ export default function ToolbarPlugin() {
     if ($isRangeSelection(selection)) {
       // ---  DETECT BLOCK NODE TYPE ---
       const anchorNode = selection.anchor.getNode();
-      const element =
-        anchorNode.getKey() === "root"
-          ? anchorNode
-          : anchorNode.getTopLevelElementOrThrow();
+      const element = anchorNode.getKey() === "root" ? anchorNode : anchorNode.getTopLevelElementOrThrow();
       const elementKey = element.getKey();
       const elementDOM = editor.getElementByKey(elementKey);
       if (elementDOM !== null) {
@@ -315,9 +286,7 @@ export default function ToolbarPlugin() {
           const type = parentList ? parentList.getTag() : element.getTag();
           setCurrentBlock(type);
         } else {
-          const type = $isHeadingNode(element)
-            ? element.getTag()
-            : element.getType();
+          const type = $isHeadingNode(element) ? element.getTag() : element.getType();
           setCurrentBlock(type);
         }
       }
@@ -358,7 +327,7 @@ export default function ToolbarPlugin() {
           updateToolbar();
           return false;
         },
-        LowPriority
+        LowPriority,
       ),
       editor.registerCommand(
         CAN_UNDO_COMMAND,
@@ -366,7 +335,7 @@ export default function ToolbarPlugin() {
           setCanUndo(payload);
           return false;
         },
-        LowPriority
+        LowPriority,
       ),
       editor.registerCommand(
         CAN_REDO_COMMAND,
@@ -374,8 +343,8 @@ export default function ToolbarPlugin() {
           setCanRedo(payload);
           return false;
         },
-        LowPriority
-      )
+        LowPriority,
+      ),
     );
   }, [editor, updateToolbar]);
 
@@ -383,71 +352,39 @@ export default function ToolbarPlugin() {
     <>
       <BlockSelect editor={editor} currentBlock={currentBlock} />
 
-      <button
-        onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")}
-        className={`button ${isBold ? "primary" : "secondary"} lg font-bold`}
-      >
+      <button onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")} className={`button ${isBold ? "primary" : "secondary"} lg font-bold`}>
         B
       </button>
-      <button
-        onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")}
-        className={`button ${isItalic ? "primary" : "secondary"} lg italic`}
-      >
+      <button onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")} className={`button ${isItalic ? "primary" : "secondary"} lg italic`}>
         I
       </button>
-      <button
-        onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline")}
-        className={`button ${
-          isUnderline ? "primary" : "secondary"
-        } lg underline`}
-      >
+      <button onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline")} className={`button ${isUnderline ? "primary" : "secondary"} lg underline`}>
         U
       </button>
 
-      <button
-        onClick={insertLink}
-        className={`button ${isLink ? "primary" : "secondary"} lg underline`}
-      >
+      <button onClick={insertLink} className={`button ${isLink ? "primary" : "secondary"} lg underline`}>
         link
       </button>
 
-      {isLink &&
-        createPortal(<FloatingLinkEditor editor={editor} />, document.body)}
+      {isLink && createPortal(<FloatingLinkEditor editor={editor} />, document.body)}
 
-      <button
-        onClick={() => editor.dispatchCommand(INSERT_LINE_BREAK_COMMAND)}
-        className="button secondary lg"
-      >
+      <button onClick={() => editor.dispatchCommand(INSERT_LINE_BREAK_COMMAND)} className="button secondary lg">
         Line break
       </button>
 
-      <button
-        onClick={() => editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND)}
-        className="button secondary lg"
-      >
+      <button onClick={() => editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND)} className="button secondary lg">
         UL
       </button>
 
-      <button
-        onClick={() => editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND)}
-        className="button secondary lg"
-      >
+      <button onClick={() => editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND)} className="button secondary lg">
         OL
       </button>
 
-      <button
-        disabled={!canUndo}
-        onClick={() => editor.dispatchCommand(UNDO_COMMAND)}
-        className="button secondary lg"
-      >
+      <button disabled={!canUndo} onClick={() => editor.dispatchCommand(UNDO_COMMAND)} className="button secondary lg">
         undo
       </button>
 
-      <button
-        disabled={!canRedo}
-        onClick={() => editor.dispatchCommand(REDO_COMMAND)}
-        className="button secondary lg"
-      >
+      <button disabled={!canRedo} onClick={() => editor.dispatchCommand(REDO_COMMAND)} className="button secondary lg">
         redo
       </button>
 
