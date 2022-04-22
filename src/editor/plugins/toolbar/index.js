@@ -23,6 +23,8 @@ import { mergeRegister, $getNearestNodeOfType } from "@lexical/utils";
 import $getSelectedNode from "../../utils/$getSelectedNode";
 import { INSERT_IMAGE_COMMAND } from "../imagesPlugin";
 import { FORMAT_CUSTOMFORMAT_COMMAND } from "../customFormatPlugin";
+import UrlIcon from "../../icons/url";
+import ImageIcon from "../../icons/image";
 
 const LowPriority = 1;
 
@@ -382,7 +384,7 @@ export default function ToolbarPlugin() {
       </button>
 
       <button onClick={insertLink} className={`button ${isLink ? "primary" : "secondary"} lg underline`}>
-        link
+        <UrlIcon />
       </button>
 
       {isLink && createPortal(<FloatingLinkEditor editor={editor} />, document.body)}
@@ -415,7 +417,7 @@ export default function ToolbarPlugin() {
         }
         className="button secondary lg"
       >
-        image
+        <ImageIcon />
       </button>
     </>
   );

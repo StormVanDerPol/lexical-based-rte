@@ -47,16 +47,20 @@ function CustomFormatInputs({ customFormats, setCustomFormats }) {
     });
   }, []);
 
-  return customFormats.map(({ key, value }) => {
-    return (
-      <div key={key}>
-        <label className="text-xs text-gray-500 block" htmlFor={key}>
-          {key}
-        </label>
-        <input className="outline-none border border-blue-500 bg-gray-50 rounded" id={key} value={value} onChange={(e) => setCustomFormat(key, e.target.value)} />
-      </div>
-    );
-  });
+  return (
+    <div className="flex flex-wrap">
+      {customFormats.map(({ key, value }) => {
+        return (
+          <div className="mb-4 basis-1/2" key={key}>
+            <label className="text-xs text-gray-500 block" htmlFor={key}>
+              {key}
+            </label>
+            <input className="outline-none border border-blue-500 bg-gray-50 rounded" id={key} value={value} onChange={(e) => setCustomFormat(key, e.target.value)} />
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 export default function Editor() {
