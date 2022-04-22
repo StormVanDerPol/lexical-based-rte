@@ -7,6 +7,7 @@ import {
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
   FORMAT_TEXT_COMMAND,
+  FORMAT_ELEMENT_COMMAND,
   INSERT_LINE_BREAK_COMMAND,
   REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
@@ -407,6 +408,19 @@ export default function ToolbarPlugin() {
 
       <button disabled={!canRedo} onClick={() => editor.dispatchCommand(REDO_COMMAND)} className="button secondary lg">
         redo
+      </button>
+
+      <button className="button secondary lg" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left")}>
+        align left
+      </button>
+      <button className="button secondary lg" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right")}>
+        align right
+      </button>
+      <button className="button secondary lg" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "justify")}>
+        justify
+      </button>
+      <button className="button secondary lg" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center")}>
+        center
       </button>
 
       <button

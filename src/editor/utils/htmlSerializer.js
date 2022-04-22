@@ -1,4 +1,4 @@
-function parseFormat(format) {
+function parseTextFormat(format) {
   const formats = {
     bold: false,
     italic: false,
@@ -43,7 +43,26 @@ function parseFormat(format) {
       return formats;
     }
     default:
-      throw new Error(`[lexical to html]: ${format} is an invalid format integer`);
+      throw new Error(`[lexical to html]: text format ${format} is an invalid format integer`);
+  }
+}
+
+function parseElementFormat(format) {
+  switch (format) {
+    case 0:
+      return "start";
+    case 1:
+      return "start";
+
+    case 2:
+      return "center";
+    case 3:
+      return "end";
+    case 4:
+      return "justify";
+      break;
+    default:
+      throw new Error(`[lexical to html]: element format ${format} is an invalid format integer`);
   }
 }
 
@@ -63,7 +82,7 @@ export default function lexicalToHTML(nodeMap) {
       const text = node.__text;
       const format = node.__format;
 
-      const { bold, italic, underline } = parseFormat(format);
+      const { bold, italic, underline } = parseTextFormat(format);
 
       return constructText(text, bold, italic, underline);
     }
@@ -73,24 +92,33 @@ export default function lexicalToHTML(nodeMap) {
     // element node
     if (Array.isArray(children)) {
       const serializedChildren = children.map((n) => serialize(nodeMap.get(n))).join("") || "";
+      const styleObject = {};
+
+      const format = node?.__format;
+
+      if (format) styleObject["text-align"] = parseElementFormat(format);
+
+      const style = Object.entries(styleObject)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(";");
 
       switch (type) {
         case "paragraph":
-          return `<p>${serializedChildren || "\u200B"}</p>`;
+          return `<p style="${style}">${serializedChildren || "\u200B"}</p>`;
         case "listitem":
-          return `<li>${serializedChildren}</li>`;
+          return `<li style="${style}">${serializedChildren}</li>`;
         case "list": {
           const tag = node.__tag;
 
-          if (tag === "ul") return `<ul>${serializedChildren}</ul>`;
-          if (tag === "ol") return `<ol>${serializedChildren}</ol>`;
+          if (tag === "ul") return `<ul style="${style}">${serializedChildren}</ul>`;
+          if (tag === "ol") return `<ol style="${style}">${serializedChildren}</ol>`;
 
           throw new Error(`[lexical to html]: list node  has wrong tag (${tag})`);
         }
 
         case "link": {
           const url = node.__url;
-          return `<a href="${url}">${serializedChildren}</a>`;
+          return `<a style="${style}" href="${url}">${serializedChildren}</a>`;
         }
 
         default:
