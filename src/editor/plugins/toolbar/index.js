@@ -22,6 +22,7 @@ import { mergeRegister, $getNearestNodeOfType } from "@lexical/utils";
 
 import $getSelectedNode from "../../utils/$getSelectedNode";
 import { INSERT_IMAGE_COMMAND } from "../imagesPlugin";
+import { FORMAT_CUSTOMFORMAT_COMMAND } from "../customFormatPlugin";
 
 const LowPriority = 1;
 
@@ -352,13 +353,31 @@ export default function ToolbarPlugin() {
     <>
       <BlockSelect editor={editor} currentBlock={currentBlock} />
 
-      <button onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")} className={`button ${isBold ? "primary" : "secondary"} lg font-bold`}>
+      <button
+        onClick={() => {
+          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
+          editor.dispatchCommand(FORMAT_CUSTOMFORMAT_COMMAND, "bold");
+        }}
+        className={`button ${isBold ? "primary" : "secondary"} lg font-bold`}
+      >
         B
       </button>
-      <button onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")} className={`button ${isItalic ? "primary" : "secondary"} lg italic`}>
+      <button
+        onClick={() => {
+          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
+          editor.dispatchCommand(FORMAT_CUSTOMFORMAT_COMMAND, "italic");
+        }}
+        className={`button ${isItalic ? "primary" : "secondary"} lg italic`}
+      >
         I
       </button>
-      <button onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline")} className={`button ${isUnderline ? "primary" : "secondary"} lg underline`}>
+      <button
+        onClick={() => {
+          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
+          editor.dispatchCommand(FORMAT_CUSTOMFORMAT_COMMAND, "underline");
+        }}
+        className={`button ${isUnderline ? "primary" : "secondary"} lg underline`}
+      >
         U
       </button>
 

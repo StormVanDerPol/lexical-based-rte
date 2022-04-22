@@ -5,6 +5,7 @@ import { useEffect, createContext, useContext, useRef, useState } from "react";
 import { $createCustomFormatNode, CustomFormatNode } from "../nodes/customFormatNode";
 
 export const INSERT_CUSTOMFORMAT_COMMAND = createCommand();
+export const FORMAT_CUSTOMFORMAT_COMMAND = createCommand();
 
 export function CustomFormatToolbarPlugin({ customFormats }) {
   const [editor] = useLexicalComposerContext();
@@ -63,9 +64,7 @@ export default function CustomFormatPlugin() {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    if (!editor.hasNodes([CustomFormatNode])) {
-      throw new Error("Custom format plugin: CustomFormatNode not registered on editor");
-    }
+    if (!editor.hasNodes([CustomFormatNode])) throw new Error("Custom format plugin: CustomFormatNode not registered on editor");
 
     return editor.registerCommand(
       INSERT_CUSTOMFORMAT_COMMAND,
@@ -83,5 +82,31 @@ export default function CustomFormatPlugin() {
       COMMAND_PRIORITY_EDITOR,
     );
   }, [editor]);
+
+  useEffect(() => {
+    if (!editor.hasNodes([CustomFormatNode])) throw new Error("Custom format plugin: CustomFormatNode not registered on editor");
+
+    return editor.registerCommand(
+      FORMAT_CUSTOMFORMAT_COMMAND,
+      (payload) => {
+        const selection = $getSelection();
+        if (!$isRangeSelection(selection)) return;
+
+        editor.update(() => {
+          console.log("========================FORMAT CUSTOM FORMAT COMMAND============================");
+
+          const selectedNodes = selection.getNodes();
+
+          const selectedCustomFormatNodes = selectedNodes.filter((node) => node.__type === "custom-format");
+
+          if (selectedNodes.length > 1) return;
+
+          selectedCustomFormatNodes.forEach((node) => node.setFormat(payload));
+        });
+      },
+      COMMAND_PRIORITY_EDITOR,
+    );
+  }, [editor]);
+
   return null;
 }
