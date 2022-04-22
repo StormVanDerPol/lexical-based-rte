@@ -86,6 +86,14 @@ export class CustomFormatNode extends DecoratorNode {
     writable.__formats = clonedFormats;
   }
 
+  getFormats() {
+    return this.__formats;
+  }
+
+  getCustomFormatKey() {
+    return this.__customFormatKey;
+  }
+
   decorate(editor) {
     return <CustomFormatElement editor={editor} customFormatKey={this.__customFormatKey} value={this.__value} formats={this.__formats} nodeKey={this.__key} />;
   }

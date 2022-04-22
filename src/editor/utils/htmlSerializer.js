@@ -101,8 +101,10 @@ export default function lexicalToHTML(nodeMap) {
     // decorator node
     switch (type) {
       case "custom-format": {
-        const customFormatKey = node.__customFormatKey;
-        return `<span data-type="custom-format">${customFormatKey}</span>`;
+        const customFormatKey = node.getCustomFormatKey();
+        const { bold, italic, underline } = node.getFormats();
+
+        return `<span data-type="custom-format" data-bold="${!!bold}" data-italic="${!!italic}" data-underline="${!!underline}">${customFormatKey}</span>`;
       }
     }
 
