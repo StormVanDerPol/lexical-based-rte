@@ -1,6 +1,6 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useState, useEffect } from "react";
-import LexicalToHTML from "../utils/htmlSerializer";
+import lexicalToHTML from "../utils/htmlSerializer";
 
 export default function DebugHTMLView() {
   const [editor] = useLexicalComposerContext();
@@ -9,7 +9,7 @@ export default function DebugHTMLView() {
 
   useEffect(() => {
     const unregister = editor.registerUpdateListener(() => {
-      setHTML(LexicalToHTML(editor.getEditorState()._nodeMap));
+      setHTML(lexicalToHTML(editor.getEditorState()._nodeMap));
     });
 
     return unregister;

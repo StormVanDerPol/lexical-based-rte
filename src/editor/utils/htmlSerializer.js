@@ -50,7 +50,7 @@ function parseFormat(format) {
 const constructText = (string, bold, italic, underline) =>
   `${underline ? "<u>" : ""}${italic ? "<em>" : ""}${bold ? "<strong>" : ""}${/* encode html entities here*/ string}${bold ? "</strong>" : ""}${italic ? "</em>" : ""}${underline ? "</u>" : ""}`;
 
-export default function LexicalToHTML(nodeMap) {
+export default function lexicalToHTML(nodeMap) {
   const root = nodeMap.get("root");
 
   console.log(nodeMap);
