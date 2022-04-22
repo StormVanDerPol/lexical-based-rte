@@ -39,7 +39,7 @@ function CustomFormatElement({ customFormatKey, editor, nodeKey, formats }) {
           const selection = $getSelection();
 
           selection.anchor.set(nodeKey, 0, "element");
-          selection.focus.set(nodeKey, 1, "element");
+          selection.focus.set(nodeKey, 0, "element");
         });
       }}
       className={`cursor-pointer border-b border-b-gray-500 hover:border-b-blue-500 select-none ${isSelected ? "ring-2 ring-blue-500 rounded" : ""} ${formats.bold ? "font-bold" : ""} ${
