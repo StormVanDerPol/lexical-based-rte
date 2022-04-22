@@ -83,8 +83,6 @@ export default function Editor() {
     },
   ]);
 
-  console.log();
-
   return (
     <>
       <LexicalComposer initialConfig={editorConfig}>
@@ -111,7 +109,7 @@ export default function Editor() {
         <TreeViewPlugin />
         <OnChangePlugin
           handler={(editorState) => {
-            console.log(LexicalToHTML(editorState._nodeMap));
+            console.log(JSON.stringify(editorState.toJSON(), null, 4));
           }}
         />
         <DebugHTMLView />

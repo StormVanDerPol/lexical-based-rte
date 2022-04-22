@@ -60,7 +60,6 @@ function parseElementFormat(format) {
       return "end";
     case 4:
       return "justify";
-      break;
     default:
       throw new Error(`[lexical to html]: element format ${format} is an invalid format integer`);
   }
@@ -71,8 +70,6 @@ const constructText = (string, bold, italic, underline) =>
 
 export default function lexicalToHTML(nodeMap) {
   const root = nodeMap.get("root");
-
-  console.log(nodeMap);
 
   function serialize(node) {
     const type = node.__type;

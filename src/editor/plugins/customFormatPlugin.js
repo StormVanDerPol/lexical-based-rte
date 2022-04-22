@@ -93,8 +93,6 @@ export default function CustomFormatPlugin() {
         if (!$isRangeSelection(selection)) return;
 
         editor.update(() => {
-          console.log("========================FORMAT CUSTOM FORMAT COMMAND============================");
-
           const selectedNodes = selection.getNodes();
 
           const selectedCustomFormatNodes = selectedNodes.filter((node) => node.__type === "custom-format");
