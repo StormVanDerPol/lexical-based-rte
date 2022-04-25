@@ -1,3 +1,37 @@
+const createTextNode = (element, key, parent) => {
+  let bold;
+  let italic;
+  let underline;
+
+  const markText = ({ nodeName, childNodes }) => {
+    if (nodeName === "STRONG") bold = true;
+    if (nodeName === "EM") italic = true;
+    if (nodeName === "U") underline = true;
+
+    childNodes?.forEach(markText);
+  };
+
+  markText(element);
+
+  const textNode = {};
+
+  textNode.__detail = 0;
+  textNode.__format = 0;
+
+  if (bold) textNode.__format += 1;
+  if (italic) textNode.__format += 2;
+  if (underline) textNode.__format += 8;
+
+  textNode.__key = key;
+  textNode.__mode = 0;
+  textNode.__parent = parent;
+  textNode.__style = "";
+  textNode.__text = element.textContent;
+  textNode.__type = "text";
+
+  return [key, textNode];
+};
+
 export default function HTMLToLexical(htmlString) {
   const doc = new DOMParser().parseFromString(htmlString || "", "text/html");
 
@@ -7,6 +41,8 @@ export default function HTMLToLexical(htmlString) {
   function domToLexical(element, key, parent) {
     const isTextNode = element.nodeType === 3;
     const isElementNode = element.nodeType === 1;
+
+    console.log(element.nodeName, element);
 
     if (isElementNode) {
       const childKeys = Array.from(element.childNodes).map((childNode) => domToLexical(childNode, keyCounter++, key));
@@ -26,6 +62,12 @@ export default function HTMLToLexical(htmlString) {
           break;
         }
 
+        case "STRONG":
+        case "EM":
+        case "U":
+          nodeMap.push(createTextNode(element, key, parent));
+          break;
+
         default: {
           const node = {};
 
@@ -40,21 +82,7 @@ export default function HTMLToLexical(htmlString) {
           nodeMap.push([key, node]);
         }
       }
-    } else if (isTextNode) {
-      const textNode = {};
-
-      textNode.__detail = 0;
-      // todo: parse format
-      textNode.__format = 0;
-      textNode.__key = key;
-      textNode.__mode = 0;
-      textNode.__parent = parent;
-      textNode.__style = "";
-      textNode.__text = element.textContent;
-      textNode.__type = "text";
-
-      nodeMap.push([key, textNode]);
-    }
+    } else if (isTextNode) nodeMap.push(createTextNode(element, key, parent));
 
     return key;
   }

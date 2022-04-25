@@ -109,7 +109,7 @@ export default function Editor() {
         <TreeViewPlugin />
         <OnChangePlugin
           handler={(editorState) => {
-            console.log(JSON.stringify(editorState.toJSON(), null, 4));
+            // console.log(JSON.stringify(editorState.toJSON(), null, 4));
           }}
         />
         <DebugHTMLView />

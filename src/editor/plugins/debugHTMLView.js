@@ -6,6 +6,8 @@ import HTMLToLexical from "../utils/lexicalSerializer";
 export default function DebugHTMLView() {
   const [editor] = useLexicalComposerContext();
 
+  const [showHTML, setShowHTML] = useState(true);
+
   const [HTML, setHTML] = useState("");
 
   useEffect(() => {
@@ -31,20 +33,40 @@ export default function DebugHTMLView() {
   return (
     <>
       <div className="my-5 p-2 rounded bg-gray-200 shadow-md border border-gray-400">
-        <div className="text-gray-600 text-sm mb-5">rendered HTML:</div>
+        <button className="button primary sm" onClick={() => setShowHTML((b) => !b)}>
+          toggle html
+        </button>
 
-        <style></style>
+        {showHTML && (
+          <>
+            <div className="text-gray-600 text-sm mt-2 mb-5">rendered HTML:</div>
 
-        <div
-          className="rendered-rich-text"
-          dangerouslySetInnerHTML={{
-            __html: HTML,
-          }}
-        />
+            <style></style>
+
+            <div
+              className="rendered-rich-text"
+              dangerouslySetInnerHTML={{
+                __html: HTML,
+              }}
+            />
+          </>
+        )}
       </div>
 
-      <div className={`${isValid ? "bg-green-500" : "bg-red-500"} p-2 text-white text-xs`}>{message}</div>
-      <pre className="rounded p-2 bg-black text-white text-xs">{editorStateStringFromHTML}</pre>
+      <div className={`${isValid ? "bg-green-500" : "bg-red-500"} p-2 text-white text-xs rounded my-2`}>{message}</div>
+
+      <div className="rounded p-2 bg-black">
+        <button
+          className="button primary mb-2 xs"
+          disabled={!isValid}
+          onClick={() => {
+            editor.setEditorState(editor.parseEditorState(editorStateStringFromHTML));
+          }}
+        >
+          Set editor state
+        </button>
+        <pre className="text-white text-xs">{editorStateStringFromHTML}</pre>
+      </div>
     </>
   );
 }
