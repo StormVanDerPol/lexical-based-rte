@@ -17,6 +17,33 @@ function CustomFormatElement({ customFormatKey, editor, nodeKey, formats }) {
 
   const [isSelected, setIsSelected] = useState(false);
 
+  const [imgSrc, setImgSrc] = useState(null);
+
+  useEffect(() => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const setTextSettings = () => {
+      ctx.font = "16px system-ui";
+      ctx.textBaseline = "top";
+    };
+
+    setTextSettings();
+
+    const { width, actualBoundingBoxAscent, actualBoundingBoxDescent } = ctx.measureText(value);
+    canvas.width = width;
+    canvas.height = actualBoundingBoxAscent + actualBoundingBoxDescent;
+
+    ctx.fillStyle = "transparent";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    setTextSettings();
+    ctx.fillStyle = "black";
+    ctx.fillText(value, 0, 0);
+
+    setImgSrc(canvas.toDataURL("image/png"));
+  }, [value]);
+
   useEffect(() => {
     const unregister = editor.registerUpdateListener(() => {
       editor.getEditorState().read(() => {
@@ -40,7 +67,7 @@ function CustomFormatElement({ customFormatKey, editor, nodeKey, formats }) {
 
   return (
     <>
-      <Spancer />
+      {/* <Spancer />
       <span
         onClick={() => {
           editor.update(() => {
@@ -56,7 +83,9 @@ function CustomFormatElement({ customFormatKey, editor, nodeKey, formats }) {
       >
         {value}
       </span>
-      <Spancer />
+      <Spancer /> */}
+
+      {imgSrc && <img className="cursor-pointer inline" src={imgSrc} />}
     </>
   );
 }
