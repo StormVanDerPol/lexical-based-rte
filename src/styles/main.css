@@ -56,3 +56,7 @@
 .rendered-rich-text [data-underline="true"] {
   @apply underline;
 }
+
+.spancer {
+  letter-spacing: -2px;
+}

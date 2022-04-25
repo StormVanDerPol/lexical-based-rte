@@ -90,7 +90,7 @@ export default function Editor() {
 
         <CustomFormatContextProvider value={customFormats}>
           <div className="relative bg-gray-100 rounded-md border border-transparent focus-within:bg-blue-50 focus-within:border-blue-700 transition-colors">
-            <div className="p-2 mb-24">
+            <div className="p-2">
               <RichTextPlugin contentEditable={<ContentEditable className="outline-none resize-none" style={{ minHeight: "150px", tabSize: "1" }} />} />
               <CustomFormatPlugin />
             </div>

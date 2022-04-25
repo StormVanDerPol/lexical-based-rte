@@ -4,6 +4,12 @@ import { useCustomFormats } from "../plugins/customFormatPlugin";
 
 // https://github.com/facebook/lexical/blob/main/examples/decorators.md
 
+/* https://github.com/facebook/lexical/pull/1968 should fix the selection issues on android */
+
+function Spancer() {
+  return <span className="spancer"> </span>;
+}
+
 function CustomFormatElement({ customFormatKey, editor, nodeKey, formats }) {
   const customFormats = useCustomFormats();
 
@@ -33,21 +39,25 @@ function CustomFormatElement({ customFormatKey, editor, nodeKey, formats }) {
   }, [editor, nodeKey]);
 
   return (
-    <span
-      onClick={() => {
-        editor.update(() => {
-          const selection = $getSelection();
+    <>
+      <Spancer />
+      <span
+        onClick={() => {
+          editor.update(() => {
+            const selection = $getSelection();
 
-          selection.anchor.set(nodeKey, 0, "element");
-          selection.focus.set(nodeKey, 0, "element");
-        });
-      }}
-      className={`cursor-pointer border-b border-b-gray-500 hover:border-b-blue-500 select-none ${isSelected ? "ring-2 ring-blue-500 rounded" : ""} ${formats.bold ? "font-bold" : ""} ${
-        formats.italic ? "italic" : ""
-      } ${formats.underline ? "underline" : ""}`}
-    >
-      {value}
-    </span>
+            selection.anchor.set(nodeKey, 0, "element");
+            selection.focus.set(nodeKey, 0, "element");
+          });
+        }}
+        className={`cursor-pointer border-b border-b-gray-500 hover:border-b-blue-500 select-none ${isSelected ? "ring-2 ring-blue-500 rounded" : ""} ${formats.bold ? "font-bold" : ""} ${
+          formats.italic ? "italic" : ""
+        } ${formats.underline ? "underline" : ""}`}
+      >
+        {value}
+      </span>
+      <Spancer />
+    </>
   );
 }
 
