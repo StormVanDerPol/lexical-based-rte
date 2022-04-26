@@ -1,6 +1,7 @@
 import { $getSelection, $isRangeSelection, DecoratorNode } from "lexical";
 import { useEffect, useState } from "react";
 import { useCustomFormats } from "../plugins/customFormatPlugin";
+import parseTextFormat from "../utils/parseTextFormat";
 
 // https://github.com/facebook/lexical/blob/main/examples/decorators.md
 
@@ -16,33 +17,6 @@ function CustomFormatElement({ customFormatKey, editor, nodeKey, formats }) {
   const { value } = customFormats.find(({ key }) => key === customFormatKey);
 
   const [isSelected, setIsSelected] = useState(false);
-
-  // const [imgSrc, setImgSrc] = useState(null);
-
-  // useEffect(() => {
-  //   const canvas = document.createElement("canvas");
-  //   const ctx = canvas.getContext("2d");
-
-  //   const setTextSettings = () => {
-  //     ctx.font = "16px system-ui";
-  //     ctx.textBaseline = "top";
-  //   };
-
-  //   setTextSettings();
-
-  //   const { width, actualBoundingBoxAscent, actualBoundingBoxDescent } = ctx.measureText(value);
-  //   canvas.width = width;
-  //   canvas.height = actualBoundingBoxAscent + actualBoundingBoxDescent;
-
-  //   ctx.fillStyle = "transparent";
-  //   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  //   setTextSettings();
-  //   ctx.fillStyle = "black";
-  //   ctx.fillText(value, 0, 0);
-
-  //   setImgSrc(canvas.toDataURL("image/png"));
-  // }, [value]);
 
   useEffect(() => {
     const unregister = editor.registerUpdateListener(() => {
@@ -73,8 +47,10 @@ function CustomFormatElement({ customFormatKey, editor, nodeKey, formats }) {
           editor.update(() => {
             const selection = $getSelection();
 
-            selection.anchor.set(nodeKey, 0, "element");
-            selection.focus.set(nodeKey, 0, "element");
+            if ($isRangeSelection(selection)) {
+              selection.anchor.set(nodeKey, 0, "element");
+              selection.focus.set(nodeKey, 0, "element");
+            }
           });
         }}
         className={`cursor-pointer border-b border-b-gray-500 hover:border-b-blue-500 select-none ${isSelected ? "ring-2 ring-blue-500 rounded" : ""} ${formats.bold ? "font-bold" : ""} ${
@@ -84,8 +60,6 @@ function CustomFormatElement({ customFormatKey, editor, nodeKey, formats }) {
         {value}
       </span>
       <Spancer />
-
-      {/* {imgSrc && <img className="cursor-pointer inline" src={imgSrc} />} */}
     </>
   );
 }
@@ -96,13 +70,12 @@ export class CustomFormatNode extends DecoratorNode {
   }
 
   static clone(node) {
-    return new CustomFormatNode(node.__customFormatKey, node.__value, node.__formats, node.__key);
+    return new CustomFormatNode(node.__customFormatKey, node.__formats, node.__key);
   }
 
-  constructor(customFormatKey, value, formats, key) {
+  constructor(customFormatKey, formats, key) {
     super(key);
     this.__customFormatKey = customFormatKey;
-    this.__value = value;
     this.__formats = formats;
   }
 
@@ -134,12 +107,18 @@ export class CustomFormatNode extends DecoratorNode {
   }
 
   decorate(editor) {
-    return <CustomFormatElement editor={editor} customFormatKey={this.__customFormatKey} value={this.__value} formats={this.__formats} nodeKey={this.__key} />;
+    return <CustomFormatElement editor={editor} customFormatKey={this.__customFormatKey} formats={this.__formats} nodeKey={this.__key} />;
   }
 }
 
-export function $createCustomFormatNode(customFormatKey, value) {
-  return new CustomFormatNode(customFormatKey, value, { bold: false, italic: false, underline: false });
+export function $createCustomFormatNode(customFormatKey) {
+  const selection = $getSelection();
+
+  let { bold, italic, underline } = { bold: false, italic: false, underline: false };
+
+  if ($isRangeSelection(selection)) ({ bold, italic, underline } = parseTextFormat(selection.format));
+
+  return new CustomFormatNode(customFormatKey, { bold, italic, underline });
 }
 
 export function $isCustomFormatNode(node) {

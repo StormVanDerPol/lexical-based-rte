@@ -121,8 +121,6 @@ export default function HTMLToLexical(htmlString) {
             if (italic) customFormatNode.setFormat("italic");
             if (underline) customFormatNode.setFormat("underline");
 
-            console.log({ bold, italic, underline });
-
             parentNode.append(customFormatNode);
 
             break;

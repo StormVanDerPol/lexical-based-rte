@@ -37,7 +37,6 @@ export function CustomFormatToolbarPlugin({ customFormats }) {
             onClick={() =>
               editor.dispatchCommand(INSERT_CUSTOMFORMAT_COMMAND, {
                 customFormatKey: customFormat.key,
-                value: customFormat.value,
               })
             }
             className="button secondary lg"
@@ -74,7 +73,7 @@ export default function CustomFormatPlugin() {
           if ($isRootNode(selection.anchor.getNode())) {
             selection.insertParagraph();
           }
-          const customFormatNode = $createCustomFormatNode(payload.customFormatKey, payload.value);
+          const customFormatNode = $createCustomFormatNode(payload.customFormatKey);
           selection.insertNodes([customFormatNode]);
         }
         return true;
@@ -94,11 +93,8 @@ export default function CustomFormatPlugin() {
 
         editor.update(() => {
           const selectedNodes = selection.getNodes();
-
           const selectedCustomFormatNodes = selectedNodes.filter((node) => node.__type === "custom-format");
-
           if (selectedNodes.length > 1) return;
-
           selectedCustomFormatNodes.forEach((node) => node.setFormat(payload));
         });
       },
