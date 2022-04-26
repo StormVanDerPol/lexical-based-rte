@@ -123,6 +123,10 @@ export default function lexicalToHTML(nodeMap) {
 
     // decorator node
     switch (type) {
+      case "image": {
+        const src = node.__src;
+        return `<img src="${src}" >`;
+      }
       case "custom-format": {
         const customFormatKey = node.getCustomFormatKey();
         const { bold, italic, underline } = node.getFormats();
