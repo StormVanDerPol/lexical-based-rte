@@ -1,93 +1,81 @@
-const createTextNode = (element, key, parent) => {
-  let bold;
-  let italic;
-  let underline;
+import { $createParagraphNode, $createTextNode, $getRoot, createEditor } from "lexical";
 
-  const markText = ({ nodeName, childNodes }) => {
-    if (nodeName === "STRONG") bold = true;
-    if (nodeName === "EM") italic = true;
-    if (nodeName === "U") underline = true;
+const markText = ({ nodeName, childNodes }) => {
+  let bold = false;
+  let italic = false;
+  let underline = false;
 
-    childNodes?.forEach(markText);
-  };
+  if (nodeName === "STRONG") bold = true;
+  if (nodeName === "EM") italic = true;
+  if (nodeName === "U") underline = true;
 
-  markText(element);
+  childNodes?.forEach(markText);
 
-  const textNode = {};
+  return { bold, italic, underline };
+};
 
-  textNode.__detail = 0;
-  textNode.__format = 0;
+const $createTextNodeFromElement = (element) => {
+  const { bold, italic, underline } = markText(element);
 
-  if (bold) textNode.__format += 1;
-  if (italic) textNode.__format += 2;
-  if (underline) textNode.__format += 8;
+  let format = 0;
 
-  textNode.__key = key;
-  textNode.__mode = 0;
-  textNode.__parent = parent;
-  textNode.__style = "";
-  textNode.__text = element.textContent;
-  textNode.__type = "text";
+  if (bold) format += 1;
+  if (italic) format += 2;
+  if (underline) format += 8;
 
-  return [key, textNode];
+  const textNode = $createTextNode(element.textContent);
+  textNode.setFormat(format);
+
+  return textNode;
 };
 
 export default function HTMLToLexical(htmlString) {
+  const editor = createEditor();
+
   const doc = new DOMParser().parseFromString(htmlString || "", "text/html");
 
-  const nodeMap = [];
-  let keyCounter = 0;
+  function domToLexical(DOMNode, parentNode) {
+    const isText = DOMNode.nodeType === 3;
+    const isElement = DOMNode.nodeType === 1;
 
-  function domToLexical(element, key, parent) {
-    const isTextNode = element.nodeType === 3;
-    const isElementNode = element.nodeType === 1;
-
-    console.log(element.nodeName, element);
-
-    if (isElementNode) {
-      const childKeys = Array.from(element.childNodes).map((childNode) => domToLexical(childNode, keyCounter++, key));
-
-      switch (element.nodeName) {
-        case "BODY": {
-          const rootNode = {};
-          rootNode.__children = childKeys;
-          rootNode.__dir = "ltr";
-          rootNode.__format = 0;
-          rootNode.__indent = 0;
-          rootNode.__key = key;
-          rootNode.__parent = null;
-          rootNode.__type = "root";
-
-          nodeMap.push([key, rootNode]);
+    if (isElement) {
+      switch (DOMNode.nodeName) {
+        case "BODY":
+          console.log("GETTING ROOT NODE");
+          const root = $getRoot();
+          Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, root));
           break;
-        }
 
         case "STRONG":
         case "EM":
         case "U":
-          nodeMap.push(createTextNode(element, key, parent));
+          const textNode = $createTextNodeFromElement(DOMNode, parentNode);
+
+          console.log("ADDING -> TO", textNode, parentNode);
+          parentNode.append(textNode);
           break;
 
-        default: {
-          const node = {};
+        case "P":
+          console.log("ADDING PARAGRAPH NODE");
+          const paragraphNode = $createParagraphNode();
+          Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, paragraphNode));
 
-          node.__children = childKeys;
-          node.__dir = "ltr";
-          node.__format = 0;
-          node.__indent = 0;
-          node.__key = key;
-          node.__parent = parent;
-          node.__type = "paragraph";
+          console.log("ADDING -> TO", paragraphNode, parentNode);
+          parentNode.append(paragraphNode);
 
-          nodeMap.push([key, node]);
-        }
+          break;
       }
-    } else if (isTextNode) nodeMap.push(createTextNode(element, key, parent));
+    } else if (isText) {
+      const textNode = $createTextNodeFromElement(DOMNode, parentNode);
 
-    return key;
+      console.log("ADDING -> TO", textNode, parentNode);
+      parentNode.append(textNode);
+    }
   }
 
-  domToLexical(doc.body, "root", null);
+  editor.update(() => {
+    domToLexical(doc.body, null);
+  });
 
-  return { _nodeMap: nodeMap, _selection: null };
+  return editor._pendingEditorState.toJSON();
 }
