@@ -1,19 +1,27 @@
 {
   "name": "lexical-based-rte",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "parcel serve ./src/public/index.html"
+    "dev": "parcel serve ./src/public/index.html",
+    "pages": "rm -rf dist && parcel build ./src/public/index.html --public-url lexical-based-rte && gh-pages -d dist"
   },
   "dependencies": {
-    "@lexical/react": "^0.2.2",
-    "lexical": "0.2.4",
+    "@lexical/link": "^0.2.4",
+    "@lexical/list": "^0.2.4",
+    "@lexical/react": "^0.2.4",
+    "@lexical/rich-text": "^0.2.4",
+    "@lexical/selection": "^0.2.4",
+    "@lexical/utils": "^0.2.4",
+    "lexical": "^0.2.4",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "gh-pages": "^3.2.3",
     "parcel": "^2.4.1",
     "postcss": "^8.4.12",
     "prettier": "^2.6.2",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
     "tailwindcss": "^3.0.24"
   }
 }
