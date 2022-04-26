@@ -25246,7 +25246,7 @@ function CustomFormatInputs({ customFormats , setCustomFormats  }) {
                     }, this),
                     /*#__PURE__*/ _jsxDevRuntime.jsxDEV("input", {
                         className: "outline-none border border-blue-500 bg-gray-50 rounded",
-                        id: key,
+                        id: `focus-id-${key}`,
                         value: value,
                         onChange: (e)=>setCustomFormat(key, e.target.value)
                     }, void 0, false, {
@@ -25274,19 +25274,23 @@ function Editor() {
     const [customFormats, setCustomFormats] = _react.useState([
         {
             key: "%{city}",
-            value: "[Plaats]"
+            value: "[Plaats]",
+            clickHandler: ()=>document.getElementById("focus-id-%{city}").focus()
         },
         {
             key: "%{date}",
-            value: "21 april 2022"
+            value: "21 april 2022",
+            clickHandler: ()=>document.getElementById("focus-id-%{date}").focus()
         },
         {
             key: "%{applicationType}",
-            value: "[Soort sollicitatie]"
+            value: "[Soort sollicitatie]",
+            clickHandler: ()=>document.getElementById("focus-id-%{applicationType}").focus()
         },
         {
             key: "%{desiredPosition}",
-            value: "[Gewenste functie]"
+            value: "[Gewenste functie]",
+            clickHandler: ()=>document.getElementById("focus-id-%{desiredPosition}").focus()
         }, 
     ]);
     return /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_jsxDevRuntime.Fragment, {
@@ -25298,7 +25302,7 @@ function Editor() {
                     setCustomFormats: setCustomFormats
                 }, void 0, false, {
                     fileName: "src/editor/index.js",
-                    lineNumber: 89,
+                    lineNumber: 93,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_customFormatPlugin.CustomFormatContextProvider, {
@@ -25319,30 +25323,10 @@ function Editor() {
                                         }, void 0, false, void 0, void 0)
                                     }, void 0, false, {
                                         fileName: "src/editor/index.js",
-                                        lineNumber: 94,
-                                        columnNumber: 15
-                                    }, this),
-                                    /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_customFormatPluginDefault.default, {}, void 0, false, {
-                                        fileName: "src/editor/index.js",
-                                        lineNumber: 95,
-                                        columnNumber: 15
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "src/editor/index.js",
-                                lineNumber: 93,
-                                columnNumber: 13
-                            }, this),
-                            /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_toolbarContainerDefault.default, {
-                                children: [
-                                    /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_toolbarDefault.default, {}, void 0, false, {
-                                        fileName: "src/editor/index.js",
                                         lineNumber: 98,
                                         columnNumber: 15
                                     }, this),
-                                    /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_customFormatPlugin.CustomFormatToolbarPlugin, {
-                                        customFormats: customFormats
-                                    }, void 0, false, {
+                                    /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_customFormatPluginDefault.default, {}, void 0, false, {
                                         fileName: "src/editor/index.js",
                                         lineNumber: 99,
                                         columnNumber: 15
@@ -25352,51 +25336,71 @@ function Editor() {
                                 fileName: "src/editor/index.js",
                                 lineNumber: 97,
                                 columnNumber: 13
+                            }, this),
+                            /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_toolbarContainerDefault.default, {
+                                children: [
+                                    /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_toolbarDefault.default, {}, void 0, false, {
+                                        fileName: "src/editor/index.js",
+                                        lineNumber: 102,
+                                        columnNumber: 15
+                                    }, this),
+                                    /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_customFormatPlugin.CustomFormatToolbarPlugin, {
+                                        customFormats: customFormats
+                                    }, void 0, false, {
+                                        fileName: "src/editor/index.js",
+                                        lineNumber: 103,
+                                        columnNumber: 15
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/editor/index.js",
+                                lineNumber: 101,
+                                columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "src/editor/index.js",
-                        lineNumber: 92,
+                        lineNumber: 96,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "src/editor/index.js",
-                    lineNumber: 91,
+                    lineNumber: 95,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_lexicalLinkPluginDefault.default, {}, void 0, false, {
                     fileName: "src/editor/index.js",
-                    lineNumber: 103,
+                    lineNumber: 107,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_autoLinkDefault.default, {}, void 0, false, {
                     fileName: "src/editor/index.js",
-                    lineNumber: 104,
+                    lineNumber: 108,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_lexicalListPluginDefault.default, {}, void 0, false, {
                     fileName: "src/editor/index.js",
-                    lineNumber: 105,
+                    lineNumber: 109,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_lexicalHistoryPlugin.HistoryPlugin, {}, void 0, false, {
                     fileName: "src/editor/index.js",
-                    lineNumber: 106,
+                    lineNumber: 110,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_lexicalAutoFocusPluginDefault.default, {}, void 0, false, {
                     fileName: "src/editor/index.js",
-                    lineNumber: 107,
+                    lineNumber: 111,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_imagesPluginDefault.default, {}, void 0, false, {
                     fileName: "src/editor/index.js",
-                    lineNumber: 108,
+                    lineNumber: 112,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_treeViewDefault.default, {}, void 0, false, {
                     fileName: "src/editor/index.js",
-                    lineNumber: 109,
+                    lineNumber: 113,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_onChangePluginDefault.default, {
@@ -25405,24 +25409,24 @@ function Editor() {
                     }
                 }, void 0, false, {
                     fileName: "src/editor/index.js",
-                    lineNumber: 110,
+                    lineNumber: 114,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_debugHTMLViewDefault.default, {}, void 0, false, {
                     fileName: "src/editor/index.js",
-                    lineNumber: 115,
+                    lineNumber: 119,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "src/editor/index.js",
-            lineNumber: 88,
+            lineNumber: 92,
             columnNumber: 7
         }, this)
     }, void 0, false);
 }
 exports.default = Editor;
-_s1(Editor, "u5mQsKyYW0SwNRyjb4ySOf5NHcs=");
+_s1(Editor, "+rQvN4xiBEl//KZ8V/tM+3r1dYM=");
 _c1 = Editor;
 var _c, _c1;
 $RefreshReg$(_c, "CustomFormatInputs");
@@ -35374,7 +35378,7 @@ _c = Spancer;
 function CustomFormatElement({ customFormatKey , editor , nodeKey , formats  }) {
     _s();
     const customFormats = _customFormatPlugin.useCustomFormats();
-    const { value  } = customFormats.find(({ key  })=>key === customFormatKey
+    const { value , clickHandler  } = customFormats.find(({ key  })=>key === customFormatKey
     );
     const [isSelected, setIsSelected] = _react.useState(false);
     _react.useEffect(()=>{
@@ -35396,39 +35400,54 @@ function CustomFormatElement({ customFormatKey , editor , nodeKey , formats  }) 
         editor,
         nodeKey
     ]);
+    const ref = _react.useRef();
+    _react.useEffect(()=>{
+        const node = ref.current;
+        if (!node) return ()=>{};
+        const contextHandler = (e)=>{
+            e.preventDefault();
+            editor.update(()=>{
+                // make sure we always have a RangeSelection as selection
+                const selection = _lexical.$getSelection() || _lexical.$createRangeSelection();
+                _lexical.$setSelection(selection);
+                if (_lexical.$isRangeSelection(selection)) {
+                    selection.anchor.set(nodeKey, 0, "element");
+                    selection.focus.set(nodeKey, 0, "element");
+                }
+            });
+        };
+        node.addEventListener("contextmenu", contextHandler);
+        return ()=>node.removeEventListener("contextmenu", contextHandler)
+        ;
+    }, [
+        editor
+    ]);
     return /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_jsxDevRuntime.Fragment, {
         children: [
             /*#__PURE__*/ _jsxDevRuntime.jsxDEV(Spancer, {}, void 0, false, {
                 fileName: "src/editor/nodes/customFormatNode.js",
-                lineNumber: 44,
+                lineNumber: 69,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ _jsxDevRuntime.jsxDEV("span", {
-                onClick: ()=>{
-                    editor.update(()=>{
-                        const selection = _lexical.$getSelection();
-                        if (_lexical.$isRangeSelection(selection)) {
-                            selection.anchor.set(nodeKey, 0, "element");
-                            selection.focus.set(nodeKey, 0, "element");
-                        }
-                    });
-                },
+                ref: ref,
+                onClick: clickHandler,
                 className: `cursor-pointer border-b border-b-gray-500 hover:border-b-blue-500 select-none ${isSelected ? "ring-2 ring-blue-500 rounded" : ""} ${formats.bold ? "font-bold" : ""} ${formats.italic ? "italic" : ""} ${formats.underline ? "underline" : ""}`,
                 children: value
             }, void 0, false, {
                 fileName: "src/editor/nodes/customFormatNode.js",
-                lineNumber: 45,
+                lineNumber: 70,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ _jsxDevRuntime.jsxDEV(Spancer, {}, void 0, false, {
                 fileName: "src/editor/nodes/customFormatNode.js",
-                lineNumber: 62,
+                lineNumber: 79,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true);
 }
-_s(CustomFormatElement, "Sb9mTBEdn4VJtUdZ/c5jncsk8lg=", false, function() {
+_s(CustomFormatElement, "CveqjxHgzi6e9v7dsq17GwFXAlA=", false, function() {
     return [
         _customFormatPlugin.useCustomFormats
     ];
@@ -35475,7 +35494,7 @@ class CustomFormatNode extends _lexical.DecoratorNode {
             nodeKey: this.__key
         }, void 0, false, {
             fileName: "src/editor/nodes/customFormatNode.js",
-            lineNumber: 110,
+            lineNumber: 127,
             columnNumber: 12
         }, this);
     }
