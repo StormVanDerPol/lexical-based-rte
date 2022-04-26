@@ -1,4 +1,4 @@
-export default theme = {
+export default {
   //   ltr: "",
   //   rtl: "",
   //   placeholder: "",

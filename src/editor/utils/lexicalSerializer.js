@@ -29,49 +29,43 @@ const $createTextNodeFromElement = (element) => {
   return textNode;
 };
 
+function domToLexical(DOMNode, parentNode) {
+  const isText = DOMNode.nodeType === 3;
+  const isElement = DOMNode.nodeType === 1;
+
+  if (isElement) {
+    switch (DOMNode.nodeName) {
+      case "BODY":
+        const root = $getRoot();
+        Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, root));
+        break;
+
+      case "STRONG":
+      case "EM":
+      case "U":
+        const textNode = $createTextNodeFromElement(DOMNode, parentNode);
+        parentNode.append(textNode);
+        break;
+
+      case "P":
+        const paragraphNode = $createParagraphNode();
+        Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, paragraphNode));
+
+        console.log("ADDING -> TO", paragraphNode, parentNode);
+        parentNode.append(paragraphNode);
+
+        break;
+    }
+  } else if (isText) {
+    const textNode = $createTextNodeFromElement(DOMNode, parentNode);
+    parentNode.append(textNode);
+  }
+}
+
 export default function HTMLToLexical(htmlString) {
   const editor = createEditor();
 
   const doc = new DOMParser().parseFromString(htmlString || "", "text/html");
-
-  function domToLexical(DOMNode, parentNode) {
-    const isText = DOMNode.nodeType === 3;
-    const isElement = DOMNode.nodeType === 1;
-
-    if (isElement) {
-      switch (DOMNode.nodeName) {
-        case "BODY":
-          console.log("GETTING ROOT NODE");
-          const root = $getRoot();
-          Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, root));
-          break;
-
-        case "STRONG":
-        case "EM":
-        case "U":
-          const textNode = $createTextNodeFromElement(DOMNode, parentNode);
-
-          console.log("ADDING -> TO", textNode, parentNode);
-          parentNode.append(textNode);
-          break;
-
-        case "P":
-          console.log("ADDING PARAGRAPH NODE");
-          const paragraphNode = $createParagraphNode();
-          Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, paragraphNode));
-
-          console.log("ADDING -> TO", paragraphNode, parentNode);
-          parentNode.append(paragraphNode);
-
-          break;
-      }
-    } else if (isText) {
-      const textNode = $createTextNodeFromElement(DOMNode, parentNode);
-
-      console.log("ADDING -> TO", textNode, parentNode);
-      parentNode.append(textNode);
-    }
-  }
 
   editor.update(() => {
     domToLexical(doc.body, null);
