@@ -55,7 +55,7 @@ function CustomFormatInputs({ customFormats, setCustomFormats }) {
             <label className="text-xs text-gray-500 block" htmlFor={key}>
               {key}
             </label>
-            <input className="outline-none border border-blue-500 bg-gray-50 rounded" id={key} value={value} onChange={(e) => setCustomFormat(key, e.target.value)} />
+            <input className="outline-none border border-blue-500 bg-gray-50 rounded" id={`focus-id-${key}`} value={value} onChange={(e) => setCustomFormat(key, e.target.value)} />
           </div>
         );
       })}
@@ -68,18 +68,22 @@ export default function Editor() {
     {
       key: "%{city}",
       value: "[Plaats]",
+      clickHandler: () => document.getElementById("focus-id-%{city}").focus(),
     },
     {
       key: "%{date}",
       value: "21 april 2022",
+      clickHandler: () => document.getElementById("focus-id-%{date}").focus(),
     },
     {
       key: "%{applicationType}",
       value: "[Soort sollicitatie]",
+      clickHandler: () => document.getElementById("focus-id-%{applicationType}").focus(),
     },
     {
       key: "%{desiredPosition}",
       value: "[Gewenste functie]",
+      clickHandler: () => document.getElementById("focus-id-%{desiredPosition}").focus(),
     },
   ]);
 

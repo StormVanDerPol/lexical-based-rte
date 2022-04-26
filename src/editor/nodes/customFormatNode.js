@@ -1,5 +1,5 @@
-import { $getSelection, $isRangeSelection, DecoratorNode } from "lexical";
-import { useEffect, useState } from "react";
+import { $createRangeSelection, $getSelection, $isRangeSelection, $setSelection, DecoratorNode } from "lexical";
+import { useEffect, useState, useRef } from "react";
 import { useCustomFormats } from "../plugins/customFormatPlugin";
 import parseTextFormat from "../utils/parseTextFormat";
 
@@ -14,7 +14,7 @@ function Spancer() {
 function CustomFormatElement({ customFormatKey, editor, nodeKey, formats }) {
   const customFormats = useCustomFormats();
 
-  const { value } = customFormats.find(({ key }) => key === customFormatKey);
+  const { value, clickHandler } = customFormats.find(({ key }) => key === customFormatKey);
 
   const [isSelected, setIsSelected] = useState(false);
 
@@ -39,20 +39,37 @@ function CustomFormatElement({ customFormatKey, editor, nodeKey, formats }) {
     return unregister;
   }, [editor, nodeKey]);
 
+  const ref = useRef();
+  useEffect(() => {
+    const node = ref.current;
+
+    if (!node) return () => {};
+
+    const contextHandler = (e) => {
+      e.preventDefault();
+      editor.update(() => {
+        // make sure we always have a RangeSelection as selection
+        const selection = $getSelection() || $createRangeSelection();
+        $setSelection(selection);
+
+        if ($isRangeSelection(selection)) {
+          selection.anchor.set(nodeKey, 0, "element");
+          selection.focus.set(nodeKey, 0, "element");
+        }
+      });
+    };
+
+    node.addEventListener("contextmenu", contextHandler);
+
+    return () => node.removeEventListener("contextmenu", contextHandler);
+  }, [editor]);
+
   return (
     <>
       <Spancer />
       <span
-        onClick={() => {
-          editor.update(() => {
-            const selection = $getSelection();
-
-            if ($isRangeSelection(selection)) {
-              selection.anchor.set(nodeKey, 0, "element");
-              selection.focus.set(nodeKey, 0, "element");
-            }
-          });
-        }}
+        ref={ref}
+        onClick={clickHandler}
         className={`cursor-pointer border-b border-b-gray-500 hover:border-b-blue-500 select-none ${isSelected ? "ring-2 ring-blue-500 rounded" : ""} ${formats.bold ? "font-bold" : ""} ${
           formats.italic ? "italic" : ""
         } ${formats.underline ? "underline" : ""}`}
