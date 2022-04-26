@@ -1307,10 +1307,10 @@ json5@^2.2.0:
   resolved "https://registry.yarnpkg.com/json5/-/json5-2.2.1.tgz#655d50ed1e6f95ad1a3caababd2b0efda10b395c"
   integrity sha512-1hqLFMSrGHRHxav9q9gNjJ5EXznIxGVO09xQRrwplcS8qs28pZ8s8hupZAmqDwZUmVZ2Qb2jnyPOWcDH8m8dlA==
 
-lexical@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/lexical/-/lexical-0.2.2.tgz#f7829b9b41f280f20bf02b48934c1ebf6cc954d8"
-  integrity sha512-Ga9iJKRmSlBzOFrsbLxXc0NNmU0LMeGod1qzU0QIUgVd0RRIaBNLb5c2mPuUUksK7QEq1hHqztofynWDhGNx6w==
+lexical@0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/lexical/-/lexical-0.2.4.tgz#9ae42b395345a51853d9dff9511fe8c844a6fba8"
+  integrity sha512-lpPaoSr2ENZXW62t6pq7QfJDFCLr5C22OOPtl7UCnivgBrAo9R9jhDY/AjMzqT6PFbd/lbxHcAEAWHg4QztS2A==
 
 lilconfig@^2.0.5:
   version "2.0.5"
