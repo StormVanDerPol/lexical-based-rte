@@ -10,8 +10,8 @@
 - [x] images
 - [x] history
 - [x] soft-breaks + softbreak button
-- [ ] align everything on block level
-- [ ] !!! CFE: uneditable void nodes whose content are external state completely unrelated to the text editor itself & buttons to insert these.
-- [ ] !!! "controlled" behaviour (reset to value functionality)
-- [ ] serializing & deserializing (html > lexical & vice versa)
-- [ ] not going insane doing the CFE & controlled stuff. Drop controlled behaviour (but keep reset) if it causes too many issues
+- [x] align everything on block level
+- [x] !!! CFE: uneditable void nodes whose content are external state completely unrelated to the text editor itself & buttons to insert these.
+- [x] build an editor state from HTML and apply it to the editor
+- [ ] !!! "controlled" behaviour
+- [x] serializing & deserializing (html > lexical & vice versa)
