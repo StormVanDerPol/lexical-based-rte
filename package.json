@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@lexical/react": "^0.2.2",
-    "lexical": "^0.2.2",
+    "lexical": "git@github.com:facebook/lexical.git#c963cfa896e8ab59a9433e03b189668a07fa5590",
     "parcel": "^2.4.1",
     "postcss": "^8.4.12",
     "prettier": "^2.6.2",
