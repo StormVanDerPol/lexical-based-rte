@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "parcel serve ./src/public/index.html",
-    "pages": "rm -rf dist && parcel build ./src/public/index.html --public-url lexical-based-rte && gh-pages -d dist"
+    "pages": "rm -rf dist && parcel build ./src/public/index.html --public-url /lexical-based-rte && gh-pages -d dist"
   },
   "dependencies": {
     "@lexical/link": "^0.2.4",
