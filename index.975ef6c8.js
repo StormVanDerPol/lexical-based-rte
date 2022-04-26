@@ -35239,8 +35239,7 @@ function CustomFormatToolbarPlugin({ customFormats  }) {
             if (used.includes(customFormat.key)) return null;
             return /*#__PURE__*/ _jsxDevRuntime.jsxDEV("button", {
                 onClick: ()=>editor.dispatchCommand(INSERT_CUSTOMFORMAT_COMMAND, {
-                        customFormatKey: customFormat.key,
-                        value: customFormat.value
+                        customFormatKey: customFormat.key
                     })
                 ,
                 className: "button secondary lg",
@@ -35269,7 +35268,7 @@ function CustomFormatContextProvider({ value , children  }) {
         children: children
     }, void 0, false, {
         fileName: "src/editor/plugins/customFormatPlugin.js",
-        lineNumber: 56,
+        lineNumber: 55,
         columnNumber: 10
     }, this);
 }
@@ -35290,7 +35289,7 @@ function CustomFormatPlugin() {
             const selection = _lexical.$getSelection();
             if (_lexical.$isRangeSelection(selection)) {
                 if (_lexical.$isRootNode(selection.anchor.getNode())) selection.insertParagraph();
-                const customFormatNode = _customFormatNode.$createCustomFormatNode(payload.customFormatKey, payload.value);
+                const customFormatNode = _customFormatNode.$createCustomFormatNode(payload.customFormatKey);
                 selection.insertNodes([
                     customFormatNode
                 ]);
@@ -35357,6 +35356,8 @@ var _jsxDevRuntime = require("react/jsx-dev-runtime");
 var _lexical = require("lexical");
 var _react = require("react");
 var _customFormatPlugin = require("../plugins/customFormatPlugin");
+var _parseTextFormat = require("../utils/parseTextFormat");
+var _parseTextFormatDefault = parcelHelpers.interopDefault(_parseTextFormat);
 var _s = $RefreshSig$();
 // https://github.com/facebook/lexical/blob/main/examples/decorators.md
 /* https://github.com/facebook/lexical/pull/1968 should fix the selection issues on android */ function Spancer() {
@@ -35365,7 +35366,7 @@ var _s = $RefreshSig$();
         children: " "
     }, void 0, false, {
         fileName: "src/editor/nodes/customFormatNode.js",
-        lineNumber: 10,
+        lineNumber: 11,
         columnNumber: 10
     }, this);
 }
@@ -35376,25 +35377,6 @@ function CustomFormatElement({ customFormatKey , editor , nodeKey , formats  }) 
     const { value  } = customFormats.find(({ key  })=>key === customFormatKey
     );
     const [isSelected, setIsSelected] = _react.useState(false);
-    // const [imgSrc, setImgSrc] = useState(null);
-    // useEffect(() => {
-    //   const canvas = document.createElement("canvas");
-    //   const ctx = canvas.getContext("2d");
-    //   const setTextSettings = () => {
-    //     ctx.font = "16px system-ui";
-    //     ctx.textBaseline = "top";
-    //   };
-    //   setTextSettings();
-    //   const { width, actualBoundingBoxAscent, actualBoundingBoxDescent } = ctx.measureText(value);
-    //   canvas.width = width;
-    //   canvas.height = actualBoundingBoxAscent + actualBoundingBoxDescent;
-    //   ctx.fillStyle = "transparent";
-    //   ctx.fillRect(0, 0, canvas.width, canvas.height);
-    //   setTextSettings();
-    //   ctx.fillStyle = "black";
-    //   ctx.fillText(value, 0, 0);
-    //   setImgSrc(canvas.toDataURL("image/png"));
-    // }, [value]);
     _react.useEffect(()=>{
         const unregister = editor.registerUpdateListener(()=>{
             editor.getEditorState().read(()=>{
@@ -35418,27 +35400,29 @@ function CustomFormatElement({ customFormatKey , editor , nodeKey , formats  }) 
         children: [
             /*#__PURE__*/ _jsxDevRuntime.jsxDEV(Spancer, {}, void 0, false, {
                 fileName: "src/editor/nodes/customFormatNode.js",
-                lineNumber: 70,
+                lineNumber: 44,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ _jsxDevRuntime.jsxDEV("span", {
                 onClick: ()=>{
                     editor.update(()=>{
                         const selection = _lexical.$getSelection();
-                        selection.anchor.set(nodeKey, 0, "element");
-                        selection.focus.set(nodeKey, 0, "element");
+                        if (_lexical.$isRangeSelection(selection)) {
+                            selection.anchor.set(nodeKey, 0, "element");
+                            selection.focus.set(nodeKey, 0, "element");
+                        }
                     });
                 },
                 className: `cursor-pointer border-b border-b-gray-500 hover:border-b-blue-500 select-none ${isSelected ? "ring-2 ring-blue-500 rounded" : ""} ${formats.bold ? "font-bold" : ""} ${formats.italic ? "italic" : ""} ${formats.underline ? "underline" : ""}`,
                 children: value
             }, void 0, false, {
                 fileName: "src/editor/nodes/customFormatNode.js",
-                lineNumber: 71,
+                lineNumber: 45,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ _jsxDevRuntime.jsxDEV(Spancer, {}, void 0, false, {
                 fileName: "src/editor/nodes/customFormatNode.js",
-                lineNumber: 86,
+                lineNumber: 62,
                 columnNumber: 7
             }, this)
         ]
@@ -35455,12 +35439,11 @@ class CustomFormatNode extends _lexical.DecoratorNode {
         return "custom-format";
     }
     static clone(node) {
-        return new CustomFormatNode(node.__customFormatKey, node.__value, node.__formats, node.__key);
+        return new CustomFormatNode(node.__customFormatKey, node.__formats, node.__key);
     }
-    constructor(customFormatKey, value, formats, key){
+    constructor(customFormatKey, formats, key){
         super(key);
         this.__customFormatKey = customFormatKey;
-        this.__value = value;
         this.__formats = formats;
     }
     createDOM() {
@@ -35488,21 +35471,27 @@ class CustomFormatNode extends _lexical.DecoratorNode {
         return /*#__PURE__*/ _jsxDevRuntime.jsxDEV(CustomFormatElement, {
             editor: editor,
             customFormatKey: this.__customFormatKey,
-            value: this.__value,
             formats: this.__formats,
             nodeKey: this.__key
         }, void 0, false, {
             fileName: "src/editor/nodes/customFormatNode.js",
-            lineNumber: 137,
+            lineNumber: 110,
             columnNumber: 12
         }, this);
     }
 }
-function $createCustomFormatNode(customFormatKey, value) {
-    return new CustomFormatNode(customFormatKey, value, {
+function $createCustomFormatNode(customFormatKey) {
+    const selection = _lexical.$getSelection();
+    let { bold , italic , underline  } = {
         bold: false,
         italic: false,
         underline: false
+    };
+    if (_lexical.$isRangeSelection(selection)) ({ bold , italic , underline  } = _parseTextFormatDefault.default(selection.format));
+    return new CustomFormatNode(customFormatKey, {
+        bold,
+        italic,
+        underline
     });
 }
 function $isCustomFormatNode(node) {
@@ -35517,7 +35506,51 @@ $RefreshReg$(_c1, "CustomFormatElement");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","lexical":"9nBHX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","../plugins/customFormatPlugin":"aTje1","react":"21dqq"}],"gJ0Aw":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","lexical":"9nBHX","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","../plugins/customFormatPlugin":"aTje1","react":"21dqq","../utils/parseTextFormat":"hBE2w"}],"hBE2w":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+function parseTextFormat(format) {
+    const formats = {
+        bold: false,
+        italic: false,
+        underline: false
+    };
+    switch(format){
+        case 0:
+            return formats;
+        case 1:
+            formats.bold = true;
+            return formats;
+        case 2:
+            formats.italic = true;
+            return formats;
+        case 3:
+            formats.bold = true;
+            formats.italic = true;
+            return formats;
+        case 8:
+            formats.underline = true;
+            return formats;
+        case 9:
+            formats.bold = true;
+            formats.underline = true;
+            return formats;
+        case 10:
+            formats.italic = true;
+            formats.underline = true;
+            return formats;
+        case 11:
+            formats.italic = true;
+            formats.bold = true;
+            formats.underline = true;
+            return formats;
+        default:
+            console.warn(`[parse text format]: text format ${format} is an invalid format integer`);
+    }
+}
+exports.default = parseTextFormat;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gJ0Aw":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$64b7 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -36520,55 +36553,17 @@ $RefreshReg$(_c, "DebugHTMLView");
 },{"react/jsx-dev-runtime":"iTorj","@lexical/react/LexicalComposerContext":"5MDUs","react":"21dqq","../utils/htmlSerializer":"5Otk2","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","../utils/lexicalSerializer":"iLlAj"}],"5Otk2":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-function parseTextFormat(format) {
-    const formats = {
-        bold: false,
-        italic: false,
-        underline: false
-    };
-    switch(format){
-        case 0:
-            return formats;
-        case 1:
-            formats.bold = true;
-            return formats;
-        case 2:
-            formats.italic = true;
-            return formats;
-        case 3:
-            formats.bold = true;
-            formats.italic = true;
-            return formats;
-        case 8:
-            formats.underline = true;
-            return formats;
-        case 9:
-            formats.bold = true;
-            formats.underline = true;
-            return formats;
-        case 10:
-            formats.italic = true;
-            formats.underline = true;
-            return formats;
-        case 11:
-            formats.italic = true;
-            formats.bold = true;
-            formats.underline = true;
-            return formats;
-        default:
-            throw new Error(`[lexical to html]: text format ${format} is an invalid format integer`);
-    }
-}
+var _parseTextFormat = require("./parseTextFormat");
+var _parseTextFormatDefault = parcelHelpers.interopDefault(_parseTextFormat);
 function parseElementFormat(format) {
     switch(format){
         case 0:
-            return "start";
         case 1:
-            return "start";
+            return "left";
         case 2:
             return "center";
         case 3:
-            return "end";
+            return "right";
         case 4:
             return "justify";
         default:
@@ -36585,7 +36580,7 @@ function lexicalToHTML(nodeMap) {
         if (type === "text") {
             const text = node.__text;
             const format = node.__format;
-            const { bold , italic , underline  } = parseTextFormat(format);
+            const { bold , italic , underline  } = _parseTextFormatDefault.default(format);
             return constructText(text, bold, italic, underline);
         }
         const children = node?.__children;
@@ -36621,6 +36616,11 @@ function lexicalToHTML(nodeMap) {
         }
         // decorator node
         switch(type){
+            case "image":
+                {
+                    const src = node.__src;
+                    return `<img src="${src}" >`;
+                }
             case "custom-format":
                 {
                     const customFormatKey = node.getCustomFormatKey();
@@ -36636,28 +36636,26 @@ function lexicalToHTML(nodeMap) {
 }
 exports.default = lexicalToHTML;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iLlAj":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./parseTextFormat":"hBE2w"}],"iLlAj":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
+var _link = require("@lexical/link");
 var _list = require("@lexical/list");
 var _lexical = require("lexical");
-const markText = ({ nodeName , childNodes  })=>{
+var _customFormatNode = require("../nodes/customFormatNode");
+var _imageNode = require("../nodes/imageNode");
+const $createTextNodeFromElement = (element)=>{
     let bold = false;
     let italic = false;
     let underline = false;
-    if (nodeName === "STRONG") bold = true;
-    if (nodeName === "EM") italic = true;
-    if (nodeName === "U") underline = true;
-    childNodes?.forEach(markText);
-    return {
-        bold,
-        italic,
-        underline
+    const markText = ({ nodeName , childNodes  })=>{
+        if (nodeName === "STRONG") bold = true;
+        if (nodeName === "EM") italic = true;
+        if (nodeName === "U") underline = true;
+        childNodes?.forEach(markText);
     };
-};
-const $createTextNodeFromElement = (element)=>{
-    const { bold , italic , underline  } = markText(element);
     let format = 0;
+    markText(element);
     if (bold) format += 1;
     if (italic) format += 2;
     if (underline) format += 8;
@@ -36669,7 +36667,10 @@ function HTMLToLexical(htmlString) {
     const editor = _lexical.createEditor({
         nodes: [
             _list.ListItemNode,
-            _list.ListNode
+            _list.ListNode,
+            _link.LinkNode,
+            _imageNode.ImageNode,
+            _customFormatNode.CustomFormatNode
         ],
         onError: (e)=>{
             console.error("[HTML TO LEXICAL ERROR]:", e);
@@ -36679,45 +36680,86 @@ function HTMLToLexical(htmlString) {
     function domToLexical(DOMNode, parentNode) {
         const isText = DOMNode.nodeType === 3;
         const isElement = DOMNode.nodeType === 1;
-        if (isElement) switch(DOMNode.nodeName){
-            case "BODY":
-                const root = _lexical.$getRoot();
-                Array.from(DOMNode.childNodes).map((childDOMNode)=>domToLexical(childDOMNode, root)
-                );
-                break;
-            case "STRONG":
-            case "EM":
-            case "U":
-                const textNode = $createTextNodeFromElement(DOMNode, parentNode);
-                parentNode.append(textNode);
-                break;
-            case "P":
-                const paragraphNode = _lexical.$createParagraphNode();
-                Array.from(DOMNode.childNodes).map((childDOMNode)=>domToLexical(childDOMNode, paragraphNode)
-                );
-                parentNode.append(paragraphNode);
-                break;
-            case "UL":
-            case "OL":
-                const listNode = _list.$createListNode(DOMNode.nodeName.toLowerCase());
-                Array.from(DOMNode.childNodes).map((childDOMNode)=>domToLexical(childDOMNode, listNode)
-                );
-                parentNode.append(listNode);
-                break;
-            case "LI":
-                const listItemNode = _list.$createListItemNode();
-                Array.from(DOMNode.childNodes).map((childDOMNode)=>domToLexical(childDOMNode, listItemNode)
-                );
-                parentNode.append(listItemNode);
-                break;
-            default:
-                console.warn("UNHANDLED NODE - defaulting to paragraph node. High chance this breaks things.", DOMNode);
-                const node = _lexical.$createParagraphNode();
-                Array.from(DOMNode.childNodes).map((childDOMNode)=>domToLexical(childDOMNode, node)
-                );
-                parentNode.append(node);
-        }
-        else if (isText) {
+        if (isElement) {
+            const format = DOMNode.style.textAlign;
+            switch(DOMNode.nodeName){
+                case "BODY":
+                    const root = _lexical.$getRoot();
+                    root.setFormat();
+                    Array.from(DOMNode.childNodes).map((childDOMNode)=>domToLexical(childDOMNode, root)
+                    );
+                    break;
+                case "STRONG":
+                case "EM":
+                case "U":
+                    const textNode = $createTextNodeFromElement(DOMNode, parentNode);
+                    parentNode.append(textNode);
+                    break;
+                case "P":
+                    const paragraphNode = _lexical.$createParagraphNode();
+                    paragraphNode.setFormat(format);
+                    Array.from(DOMNode.childNodes).map((childDOMNode)=>domToLexical(childDOMNode, paragraphNode)
+                    );
+                    parentNode.append(paragraphNode);
+                    break;
+                case "UL":
+                case "OL":
+                    const listNode = _list.$createListNode(DOMNode.nodeName.toLowerCase());
+                    listNode.setFormat(format);
+                    Array.from(DOMNode.childNodes).map((childDOMNode)=>domToLexical(childDOMNode, listNode)
+                    );
+                    parentNode.append(listNode);
+                    break;
+                case "BR":
+                    const breakNode = _lexical.$createLineBreakNode();
+                    parentNode.append(breakNode);
+                    break;
+                case "A":
+                    const url = DOMNode.getAttribute("href");
+                    const linkNode = _link.$createLinkNode(url);
+                    Array.from(DOMNode.childNodes).map((childDOMNode)=>domToLexical(childDOMNode, linkNode)
+                    );
+                    parentNode.append(linkNode);
+                    break;
+                case "LI":
+                    const listItemNode = _list.$createListItemNode();
+                    listItemNode.setFormat(format);
+                    Array.from(DOMNode.childNodes).map((childDOMNode)=>domToLexical(childDOMNode, listItemNode)
+                    );
+                    parentNode.append(listItemNode);
+                    break;
+                case "IMG":
+                    const src = DOMNode.getAttribute("src");
+                    const imageNode = _imageNode.$createImageNode(src);
+                    parentNode.append(imageNode);
+                    break;
+                case "SPAN":
+                    const type = DOMNode.getAttribute("data-type");
+                    if (type === "custom-format") {
+                        const customFormatKey = DOMNode.innerText;
+                        const bold = DOMNode.getAttribute("data-bold") === "true";
+                        const italic = DOMNode.getAttribute("data-italic") === "true";
+                        const underline = DOMNode.getAttribute("data-underline") === "true";
+                        let format = 0;
+                        if (bold) format += 1;
+                        if (italic) format += 2;
+                        if (underline) format += 8;
+                        const customFormatNode = _customFormatNode.$createCustomFormatNode(customFormatKey, "");
+                        if (bold) customFormatNode.setFormat("bold");
+                        if (italic) customFormatNode.setFormat("italic");
+                        if (underline) customFormatNode.setFormat("underline");
+                        parentNode.append(customFormatNode);
+                        break;
+                    }
+                default:
+                    console.warn("UNHANDLED NODE - defaulting to paragraph node. High chance this breaks things.", DOMNode);
+                    const node = _lexical.$createParagraphNode();
+                    node.setFormat(format);
+                    Array.from(DOMNode.childNodes).map((childDOMNode)=>domToLexical(childDOMNode, node)
+                    );
+                    parentNode.append(node);
+            }
+        } else if (isText) {
             const textNode = $createTextNodeFromElement(DOMNode, parentNode);
             parentNode.append(textNode);
         }
@@ -36725,7 +36767,6 @@ function HTMLToLexical(htmlString) {
     editor.update(()=>{
         domToLexical(doc.body, null);
     });
-    console.log(editor);
     return (editor._pendingEditorState || editor._editorState).toJSON();
 }
 exports.default = HTMLToLexical;
@@ -36733,7 +36774,7 @@ _c = HTMLToLexical;
 var _c;
 $RefreshReg$(_c, "HTMLToLexical");
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","lexical":"9nBHX","@lexical/list":"jj0li"}],"emGyU":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","lexical":"9nBHX","@lexical/list":"jj0li","@lexical/link":"kY84Q","../nodes/imageNode":"lbT2A","../nodes/customFormatNode":"fon2R"}],"emGyU":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$eca5 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
