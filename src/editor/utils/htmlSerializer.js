@@ -50,14 +50,12 @@ function parseTextFormat(format) {
 function parseElementFormat(format) {
   switch (format) {
     case 0:
-      return "start";
     case 1:
-      return "start";
-
+      return "left";
     case 2:
       return "center";
     case 3:
-      return "end";
+      return "right";
     case 4:
       return "justify";
     default:

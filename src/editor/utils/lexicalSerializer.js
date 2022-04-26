@@ -45,9 +45,12 @@ export default function HTMLToLexical(htmlString) {
     const isElement = DOMNode.nodeType === 1;
 
     if (isElement) {
+      const format = DOMNode.style.textAlign;
+
       switch (DOMNode.nodeName) {
         case "BODY":
           const root = $getRoot();
+          root.setFormat();
           Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, root));
           break;
 
@@ -60,18 +63,21 @@ export default function HTMLToLexical(htmlString) {
 
         case "P":
           const paragraphNode = $createParagraphNode();
+          paragraphNode.setFormat(format);
           Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, paragraphNode));
           parentNode.append(paragraphNode);
           break;
         case "UL":
         case "OL":
           const listNode = $createListNode(DOMNode.nodeName.toLowerCase());
+          listNode.setFormat(format);
           Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, listNode));
           parentNode.append(listNode);
           break;
 
         case "LI":
           const listItemNode = $createListItemNode();
+          listItemNode.setFormat(format);
           Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, listItemNode));
           parentNode.append(listItemNode);
           break;
@@ -79,6 +85,7 @@ export default function HTMLToLexical(htmlString) {
         default:
           console.warn("UNHANDLED NODE - defaulting to paragraph node. High chance this breaks things.", DOMNode);
           const node = $createParagraphNode();
+          node.setFormat(format);
           Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, node));
           parentNode.append(node);
       }
