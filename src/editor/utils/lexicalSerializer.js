@@ -1,3 +1,4 @@
+import { $createListItemNode, $createListNode, ListItemNode, ListNode } from "@lexical/list";
 import { $createParagraphNode, $createTextNode, $getRoot, createEditor } from "lexical";
 
 const markText = ({ nodeName, childNodes }) => {
@@ -29,47 +30,69 @@ const $createTextNodeFromElement = (element) => {
   return textNode;
 };
 
-function domToLexical(DOMNode, parentNode) {
-  const isText = DOMNode.nodeType === 3;
-  const isElement = DOMNode.nodeType === 1;
-
-  if (isElement) {
-    switch (DOMNode.nodeName) {
-      case "BODY":
-        const root = $getRoot();
-        Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, root));
-        break;
-
-      case "STRONG":
-      case "EM":
-      case "U":
-        const textNode = $createTextNodeFromElement(DOMNode, parentNode);
-        parentNode.append(textNode);
-        break;
-
-      case "P":
-        const paragraphNode = $createParagraphNode();
-        Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, paragraphNode));
-
-        console.log("ADDING -> TO", paragraphNode, parentNode);
-        parentNode.append(paragraphNode);
-
-        break;
-    }
-  } else if (isText) {
-    const textNode = $createTextNodeFromElement(DOMNode, parentNode);
-    parentNode.append(textNode);
-  }
-}
-
 export default function HTMLToLexical(htmlString) {
-  const editor = createEditor();
+  const editor = createEditor({
+    nodes: [ListItemNode, ListNode],
+    onError: (e) => {
+      console.error("[HTML TO LEXICAL ERROR]:", e);
+    },
+  });
 
   const doc = new DOMParser().parseFromString(htmlString || "", "text/html");
+
+  function domToLexical(DOMNode, parentNode) {
+    const isText = DOMNode.nodeType === 3;
+    const isElement = DOMNode.nodeType === 1;
+
+    if (isElement) {
+      switch (DOMNode.nodeName) {
+        case "BODY":
+          const root = $getRoot();
+          Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, root));
+          break;
+
+        case "STRONG":
+        case "EM":
+        case "U":
+          const textNode = $createTextNodeFromElement(DOMNode, parentNode);
+          parentNode.append(textNode);
+          break;
+
+        case "P":
+          const paragraphNode = $createParagraphNode();
+          Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, paragraphNode));
+          parentNode.append(paragraphNode);
+          break;
+        case "UL":
+        case "OL":
+          const listNode = $createListNode(DOMNode.nodeName.toLowerCase());
+          Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, listNode));
+          parentNode.append(listNode);
+          break;
+
+        case "LI":
+          const listItemNode = $createListItemNode();
+          Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, listItemNode));
+          parentNode.append(listItemNode);
+          break;
+
+        default:
+          console.warn("UNHANDLED NODE - defaulting to paragraph node. High chance this breaks things.", DOMNode);
+          const node = $createParagraphNode();
+          Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, node));
+          parentNode.append(node);
+      }
+    } else if (isText) {
+      const textNode = $createTextNodeFromElement(DOMNode, parentNode);
+      parentNode.append(textNode);
+    }
+  }
 
   editor.update(() => {
     domToLexical(doc.body, null);
   });
 
-  return editor._pendingEditorState.toJSON();
+  console.log(editor);
+
+  return (editor._pendingEditorState || editor._editorState).toJSON();
 }
