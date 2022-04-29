@@ -37,16 +37,7 @@ const editorConfig = {
   nodes: [LinkNode, AutoLinkNode, ListNode, ListItemNode, QuoteNode, HeadingNode, ImageNode, CustomFormatNode],
 };
 
-function CustomFormatInputs({ customFormats, setCustomFormats }) {
-  const setCustomFormat = useCallback((key, value) => {
-    setCustomFormats((c) => {
-      const copy = [...c];
-
-      copy.find((customFormat) => key === customFormat.key).value = value;
-      return copy;
-    });
-  }, []);
-
+function CustomFormatInputs({ customFormats, setCustomFormat }) {
   return (
     <div className="flex flex-wrap">
       {customFormats.map(({ key, value }) => {
@@ -87,12 +78,21 @@ export default function Editor() {
     },
   ]);
 
+  const setCustomFormat = useCallback((key, value) => {
+    setCustomFormats((c) => {
+      const copy = [...c];
+
+      copy.find((customFormat) => key === customFormat.key).value = value;
+      return copy;
+    });
+  }, []);
+
   return (
     <>
       <LexicalComposer initialConfig={editorConfig}>
-        <CustomFormatInputs customFormats={customFormats} setCustomFormats={setCustomFormats} />
+        <CustomFormatInputs customFormats={customFormats} setCustomFormat={setCustomFormat} />
 
-        <CustomFormatContextProvider value={customFormats}>
+        <CustomFormatContextProvider customFormats={customFormats} setCustomFormat={setCustomFormat}>
           <div className="relative bg-gray-100 rounded-md border border-transparent focus-within:bg-blue-50 focus-within:border-blue-700 transition-colors">
             <div className="p-2">
               <RichTextPlugin contentEditable={<ContentEditable className="outline-none resize-none" style={{ minHeight: "150px", tabSize: "1" }} />} />

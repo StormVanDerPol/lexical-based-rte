@@ -51,12 +51,14 @@ export function CustomFormatToolbarPlugin({ customFormats }) {
 
 const CustomFormatContext = createContext({});
 
-export function CustomFormatContextProvider({ value, children }) {
-  return <CustomFormatContext.Provider value={value}>{children}</CustomFormatContext.Provider>;
+export function CustomFormatContextProvider({ customFormats, children, setCustomFormat }) {
+  return <CustomFormatContext.Provider value={{ customFormats, setCustomFormat }}>{children}</CustomFormatContext.Provider>;
 }
 
 export const useCustomFormats = () => {
-  return useContext(CustomFormatContext);
+  const stuff = useContext(CustomFormatContext);
+  console.log(stuff);
+  return stuff;
 };
 
 export default function CustomFormatPlugin() {

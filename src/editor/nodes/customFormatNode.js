@@ -1,81 +1,94 @@
-import { $createRangeSelection, $getSelection, $isRangeSelection, $setSelection, DecoratorNode } from "lexical";
+import LexicalComposer from "@lexical/react/LexicalComposer";
+import ContentEditable from "@lexical/react/LexicalContentEditable";
+
+import { $createParagraphNode, $createRangeSelection, $createTextNode, $getRoot, $getSelection, $isRangeSelection, $setSelection, DecoratorNode } from "lexical";
 import { useEffect, useState, useRef } from "react";
 import { useCustomFormats } from "../plugins/customFormatPlugin";
 import parseTextFormat from "../utils/parseTextFormat";
 
+import PlainTextPlugin from "@lexical/react/LexicalPlainTextPlugin";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+
+const editorConfig = {
+  onError(e) {
+    console.error("[help me]", e);
+  },
+  theme: {
+    paragraph: "inline",
+  },
+};
 // https://github.com/facebook/lexical/blob/main/examples/decorators.md
 
 /* https://github.com/facebook/lexical/pull/1968 should fix the selection issues on android */
+
+function CustomFormatEditor({ value, set }) {
+  const [editor] = useLexicalComposerContext();
+
+  useEffect(() => {
+    editor.update(() => {
+      const root = $getRoot();
+
+      root.getChildren().forEach((child) => child.remove());
+
+      const paragraph = $createParagraphNode();
+      const text = $createTextNode(value);
+
+      root.append(paragraph.append(text));
+    });
+  }, [editor, value]);
+
+  const [localValue, setLocalValue] = useState(value);
+
+  useEffect(() => {
+    editor.registerTextContentListener(() => {
+      // hafta serialize to plain text now.
+
+      const nodeMap = editor.getEditorState()._nodeMap;
+
+      const root = nodeMap.get("root");
+
+      function serialize(node) {
+        const type = node.__type;
+
+        if (type === "text") return node.__text;
+
+        const children = node?.__children;
+
+        if (Array.isArray(children)) {
+          const serializedChildren = children.map((n) => serialize(nodeMap.get(n))).join("");
+
+          return serializedChildren;
+        }
+      }
+
+      const probablyPlaintext = serialize(root);
+
+      setLocalValue(probablyPlaintext);
+    });
+  }, [editor, set]);
+
+  return null;
+}
 
 function Spancer() {
   return <span className="spancer"> </span>;
 }
 
-function CustomFormatElement({ customFormatKey, editor, nodeKey, formats }) {
-  const customFormats = useCustomFormats();
+function CustomFormatElement({ customFormatKey }) {
+  const { customFormats, setCustomFormat } = useCustomFormats();
 
-  const { value, clickHandler } = customFormats.find(({ key }) => key === customFormatKey);
+  console.log(customFormats);
 
-  const [isSelected, setIsSelected] = useState(false);
-
-  useEffect(() => {
-    const unregister = editor.registerUpdateListener(() => {
-      editor.getEditorState().read(() => {
-        const selection = $getSelection();
-
-        if (!$isRangeSelection(selection)) {
-          setIsSelected(false);
-          return;
-        }
-
-        const nodes = selection.getNodes();
-
-        const isInSelection = nodes.some((node) => node.__key === nodeKey);
-
-        setIsSelected(isInSelection);
-      });
-    });
-
-    return unregister;
-  }, [editor, nodeKey]);
-
-  const ref = useRef();
-  useEffect(() => {
-    const node = ref.current;
-
-    if (!node) return () => {};
-
-    const contextHandler = (e) => {
-      e.preventDefault();
-      editor.update(() => {
-        // make sure we always have a RangeSelection as selection
-        const selection = $getSelection() || $createRangeSelection();
-        $setSelection(selection);
-
-        if ($isRangeSelection(selection)) {
-          selection.anchor.set(nodeKey, 0, "element");
-          selection.focus.set(nodeKey, 0, "element");
-        }
-      });
-    };
-
-    node.addEventListener("contextmenu", contextHandler);
-
-    return () => node.removeEventListener("contextmenu", contextHandler);
-  }, [editor]);
+  const { key, value } = customFormats.find(({ key }) => key === customFormatKey);
 
   return (
     <>
       <Spancer />
-      <span
-        ref={ref}
-        onClick={clickHandler}
-        className={`cursor-pointer border-b border-b-gray-500 hover:border-b-blue-500 select-none ${isSelected ? "ring-2 ring-blue-500 rounded" : ""} ${formats.bold ? "font-bold" : ""} ${
-          formats.italic ? "italic" : ""
-        } ${formats.underline ? "underline" : ""}`}
-      >
-        {value}
-      </span>
+      <LexicalComposer initialConfig={editorConfig}>
+        <CustomFormatEditor value={value} set={(newValue) => setCustomFormat(key, newValue)} />
+        <PlainTextPlugin contentEditable={<ContentEditable className="inline" />} />
+      </LexicalComposer>
+
       <Spancer />
     </>
   );

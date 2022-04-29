@@ -99,6 +99,11 @@
   resolved "https://registry.yarnpkg.com/@lexical/plain-text/-/plain-text-0.2.4.tgz#873d81d0cc171fb9760d4b4ba3d96383eaedcc19"
   integrity sha512-ZOJhtWaK69xbc3oSzj+iLDlCUmpkl99PZmZMmGg0V8kHvsMym3u9BsVbYcBqUwp3xYSZGLNkLoHPAk15eoU9Hw==
 
+"@lexical/plain-text@^0.2.5":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@lexical/plain-text/-/plain-text-0.2.5.tgz#44466d3a6ec014835d2a9ce54a69c0f145b8c09d"
+  integrity sha512-JEOW4qaKo0PZTBZIDFY6qvp1uo1E9Aun4TOGorujuSh2RW1kEB1C72wurm8hvVMjK5zAQ6RhJ0Pzi2nnoIxptQ==
+
 "@lexical/react@^0.2.4":
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/@lexical/react/-/react-0.2.4.tgz#f3e238f54d48252a115a3c3bee0b72cf4141a59d"
@@ -1460,10 +1465,10 @@ jsonfile@^4.0.0:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
-lexical@0.2.4:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/lexical/-/lexical-0.2.4.tgz#9ae42b395345a51853d9dff9511fe8c844a6fba8"
-  integrity sha512-lpPaoSr2ENZXW62t6pq7QfJDFCLr5C22OOPtl7UCnivgBrAo9R9jhDY/AjMzqT6PFbd/lbxHcAEAWHg4QztS2A==
+lexical@^0.2.4:
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/lexical/-/lexical-0.2.5.tgz#0f882519160d75dccc9e34b531b2707c1e7ba9f5"
+  integrity sha512-3fftapY0+uzaWD9rNwIYQgbKwTefFvRGECoK9PkRlgpW7uDOw0rqBh5TrPqBbaqyeF4L43xw4YykjH4ccM0bPw==
 
 lilconfig@^2.0.5:
   version "2.0.5"
