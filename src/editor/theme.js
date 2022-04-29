@@ -21,4 +21,6 @@ export default {
     italic: "italic",
     underline: "underline",
   },
+  customFormat: "border-b border-b-gray-500 hover:border-b-blue-500",
+  hashtag: "bg-green-200",
 };

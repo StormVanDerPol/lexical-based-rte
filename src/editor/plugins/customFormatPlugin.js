@@ -1,29 +1,26 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getSelection, $isRangeSelection, $isRootNode, COMMAND_PRIORITY_EDITOR, createCommand } from "lexical";
-import { useEffect, createContext, useContext, useRef, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
-import { $createCustomFormatNode, CustomFormatNode } from "../nodes/customFormatNode";
+import useLexicalTextEntity from "@lexical/react/useLexicalTextEntity";
+
+import { $createCustomFormatNode, $isCustomFormatNode, CustomFormatNode } from "../nodes/customFormatNode";
 
 export const INSERT_CUSTOMFORMAT_COMMAND = createCommand();
-export const FORMAT_CUSTOMFORMAT_COMMAND = createCommand();
 
 export function CustomFormatToolbarPlugin({ customFormats }) {
   const [editor] = useLexicalComposerContext();
-
   const [used, setUsed] = useState([]);
 
   useEffect(() => {
-    const unregister = editor.registerUpdateListener(() => {
-      setUsed([
-        ...new Set(
-          Object.values(editor.getDecorators())
-            .map(({ props }) => props.customFormatKey)
-            .filter((c) => c),
-        ),
-      ]);
-    });
+    editor.registerUpdateListener(() => {
+      const keys = Array.from(editor.getEditorState()._nodeMap)
+        .filter(([, node]) => $isCustomFormatNode(node))
+        .map(([, node]) => node.__customFormatKey);
 
-    return unregister;
+      // dequal check here maybe
+      setUsed(keys);
+    });
   }, [editor]);
 
   return (
@@ -37,6 +34,7 @@ export function CustomFormatToolbarPlugin({ customFormats }) {
             onClick={() =>
               editor.dispatchCommand(INSERT_CUSTOMFORMAT_COMMAND, {
                 customFormatKey: customFormat.key,
+                initialText: customFormat.value,
               })
             }
             className="button secondary lg"
@@ -49,17 +47,7 @@ export function CustomFormatToolbarPlugin({ customFormats }) {
   );
 }
 
-const CustomFormatContext = createContext({});
-
-export function CustomFormatContextProvider({ value, children }) {
-  return <CustomFormatContext.Provider value={value}>{children}</CustomFormatContext.Provider>;
-}
-
-export const useCustomFormats = () => {
-  return useContext(CustomFormatContext);
-};
-
-export default function CustomFormatPlugin() {
+export default function CustomFormatPlugin({ customFormats, setCustomFormats }) {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
@@ -69,11 +57,15 @@ export default function CustomFormatPlugin() {
       INSERT_CUSTOMFORMAT_COMMAND,
       (payload) => {
         const selection = $getSelection();
+
         if ($isRangeSelection(selection)) {
           if ($isRootNode(selection.anchor.getNode())) {
             selection.insertParagraph();
           }
-          const customFormatNode = $createCustomFormatNode(payload.customFormatKey);
+
+          console.log("wtf");
+
+          const customFormatNode = $createCustomFormatNode(payload);
           selection.insertNodes([customFormatNode]);
         }
         return true;
@@ -83,23 +75,21 @@ export default function CustomFormatPlugin() {
   }, [editor]);
 
   useEffect(() => {
-    if (!editor.hasNodes([CustomFormatNode])) throw new Error("Custom format plugin: CustomFormatNode not registered on editor");
-
-    return editor.registerCommand(
-      FORMAT_CUSTOMFORMAT_COMMAND,
-      (payload) => {
-        const selection = $getSelection();
-        if (!$isRangeSelection(selection)) return;
-
-        editor.update(() => {
-          const selectedNodes = selection.getNodes();
-          const selectedCustomFormatNodes = selectedNodes.filter((node) => node.__type === "custom-format");
-          if (selectedNodes.length > 1) return;
-          selectedCustomFormatNodes.forEach((node) => node.setFormat(payload));
+    editor.registerUpdateListener(() => {
+      const newCustomFormats = Array.from(editor.getEditorState()._nodeMap)
+        .filter(([, node]) => $isCustomFormatNode(node))
+        .map(([, node]) => {
+          return { key: node.__customFormatKey, value: node.__text };
         });
-      },
-      COMMAND_PRIORITY_EDITOR,
-    );
+
+      console.log("new", newCustomFormats);
+
+      setCustomFormats((_customFormats) => {
+        const unique = [..._customFormats.filter(({ key }) => !newCustomFormats.some(({ key: _key }) => key === _key)), ...newCustomFormats];
+
+        return unique;
+      });
+    });
   }, [editor]);
 
   return null;
