@@ -86,7 +86,10 @@ export default function Editor() {
           });
         }}
       />
-      <div className="bg-blue-900 text-white p-2 text-xs rounded my-2">cfe state: {JSON.stringify(Array.from(customFormats))}</div>
+      <pre className="bg-blue-900 text-white p-2 text-xs rounded my-2">
+        {`cfe state:\n`}
+        {JSON.stringify(Array.from(customFormats), null, 4)}
+      </pre>
       <DebugHTMLView />
     </LexicalComposer>
   );

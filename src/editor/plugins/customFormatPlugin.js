@@ -205,7 +205,7 @@ export function NestedCustomFormatEditorPlugin({ text }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor]);
 
-  return <LexicalContentEditable className="inline outline-none bg-blue-100" />;
+  return <LexicalContentEditable className="inline-block outline-none" style={{ minWidth: "10px" }} />;
 }
 
 export const INSERT_CUSTOMFORMAT_COMMAND = createCommand();
@@ -240,14 +240,16 @@ function CustomFormatDecoratorElement({ text, nodeKey }) {
   );
 
   return (
-    <>
+    // spancers are neccessary for the android fix to work
+    // hopefully the div wrapper doesn't break any mobile shenanigans
+    <div className="inline bg-blue-200 rounded-sm">
       <Spancer />
       <LexicalComposer initialConfig={NESTED_CUSTOM_FORMAT_EDITOR_CONFIG}>
         <NestedCustomFormatEditorPlugin text={text} />
         <OnChangePlugin handler={onChangeHandler} />
       </LexicalComposer>
       <Spancer />
-    </>
+    </div>
   );
 }
 
