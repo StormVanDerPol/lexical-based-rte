@@ -1,8 +1,9 @@
 import { $createLinkNode, LinkNode } from "@lexical/link";
 import { $createListItemNode, $createListNode, ListItemNode, ListNode } from "@lexical/list";
 import { $createLineBreakNode, $createParagraphNode, $createTextNode, $getRoot, createEditor } from "lexical";
-import { $createCustomFormatNode, CustomFormatNode } from "../nodes/customFormatNode";
+import { $createCustomFormatNode, CustomFormatNode } from "../plugins/customFormatPlugin";
 import { $createImageNode, ImageNode } from "../nodes/imageNode";
+import decodeHTMLEntities from "./decodeHTMLEntities";
 
 const $createTextNodeFromElement = (element) => {
   let bold = false;
@@ -25,7 +26,7 @@ const $createTextNodeFromElement = (element) => {
   if (italic) format += 2;
   if (underline) format += 8;
 
-  const textNode = $createTextNode(element.textContent);
+  const textNode = $createTextNode(decodeHTMLEntities(element.textContent));
   textNode.setFormat(format);
 
   return textNode;
@@ -116,7 +117,9 @@ export default function HTMLToLexical(htmlString) {
             if (italic) format += 2;
             if (underline) format += 8;
 
-            const customFormatNode = $createCustomFormatNode(customFormatKey, "");
+            const text = decodeHTMLEntities(DOMNode.getAttribute("data-text"));
+
+            const customFormatNode = $createCustomFormatNode(customFormatKey, text);
             if (bold) customFormatNode.setFormat("bold");
             if (italic) customFormatNode.setFormat("italic");
             if (underline) customFormatNode.setFormat("underline");

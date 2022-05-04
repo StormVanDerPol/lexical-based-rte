@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState } from "react";
 
 import LexicalComposer from "@lexical/react/LexicalComposer";
 import ContentEditable from "@lexical/react/LexicalContentEditable";
@@ -22,11 +22,9 @@ import DebugHTMLView from "./plugins/debugHTMLView";
 import ImagesPlugin from "./plugins/imagesPlugin";
 
 import { ImageNode } from "./nodes/imageNode";
-import { CustomFormatNode } from "./nodes/customFormatNode";
-import CustomFormatPlugin, { CustomFormatContextProvider, CustomFormatToolbarPlugin } from "./plugins/customFormatPlugin";
+import CustomFormatPlugin, { CustomFormatNode, CustomFormatToolbarPlugin, getCustomFormatNodes } from "./plugins/customFormatPlugin";
 import ToolbarContainer from "./plugins/toolbar/toolbarContainer";
 import OnChangePlugin from "./plugins/onChangePlugin";
-import LexicalToHTML from "./utils/htmlSerializer";
 
 const editorConfig = {
   theme,
@@ -37,73 +35,29 @@ const editorConfig = {
   nodes: [LinkNode, AutoLinkNode, ListNode, ListItemNode, QuoteNode, HeadingNode, ImageNode, CustomFormatNode],
 };
 
-function CustomFormatInputs({ customFormats, setCustomFormat }) {
-  return (
-    <div className="flex flex-wrap">
-      {customFormats.map(({ key, value }) => {
-        return (
-          <div className="mb-4 basis-1/2" key={key}>
-            <label className="text-xs text-gray-500 block" htmlFor={key}>
-              {key}
-            </label>
-            <input className="outline-none border border-blue-500 bg-gray-50 rounded" id={`focus-id-${key}`} value={value} onChange={(e) => setCustomFormat(key, e.target.value)} />
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 export default function Editor() {
-  const [customFormats, setCustomFormats] = useState([
-    {
-      key: "%{city}",
-      value: "[Plaats]",
-      clickHandler: () => document.getElementById("focus-id-%{city}").focus(),
-    },
-    {
-      key: "%{date}",
-      value: "21 april 2022",
-      clickHandler: () => document.getElementById("focus-id-%{date}").focus(),
-    },
-    {
-      key: "%{applicationType}",
-      value: "[Soort sollicitatie]",
-      clickHandler: () => document.getElementById("focus-id-%{applicationType}").focus(),
-    },
-    {
-      key: "%{desiredPosition}",
-      value: "[Gewenste functie]",
-      clickHandler: () => document.getElementById("focus-id-%{desiredPosition}").focus(),
-    },
-  ]);
-
-  const setCustomFormat = useCallback((key, value) => {
-    setCustomFormats((c) => {
-      const copy = [...c];
-
-      copy.find((customFormat) => key === customFormat.key).value = value;
-      return copy;
-    });
-  }, []);
+  const [customFormats, setCustomFormats] = useState(
+    new Map([
+      ["%{city}", "[Plaats]"],
+      ["%{date}", "21 april 2022"],
+      ["%{applicationType}", "[Soort sollicitatie]"],
+      ["%{desiredPosition}", "[Gewenste functie]"],
+    ]),
+  );
 
   return (
     <>
       <LexicalComposer initialConfig={editorConfig}>
-        <CustomFormatInputs customFormats={customFormats} setCustomFormat={setCustomFormat} />
-
-        <CustomFormatContextProvider customFormats={customFormats} setCustomFormat={setCustomFormat}>
-          <div className="relative bg-gray-100 rounded-md border border-transparent focus-within:bg-blue-50 focus-within:border-blue-700 transition-colors">
-            <div className="p-2">
-              <RichTextPlugin contentEditable={<ContentEditable className="outline-none resize-none" style={{ minHeight: "150px", tabSize: "1" }} />} />
-              <CustomFormatPlugin />
-            </div>
-            <ToolbarContainer>
-              <ToolbarPlugin />
-              <CustomFormatToolbarPlugin customFormats={customFormats} />
-            </ToolbarContainer>
+        <div className="relative bg-gray-100 rounded-md border border-transparent focus-within:bg-blue-50 focus-within:border-blue-700 transition-colors">
+          <div className="p-2">
+            <RichTextPlugin contentEditable={<ContentEditable className="outline-none resize-none" style={{ minHeight: "150px", tabSize: "1" }} />} />
+            <CustomFormatPlugin />
           </div>
-        </CustomFormatContextProvider>
+          <ToolbarContainer>
+            <ToolbarPlugin />
+            <CustomFormatToolbarPlugin customFormats={customFormats} />
+          </ToolbarContainer>
+        </div>
         <LinkPlugin />
         <AutoLinkPlugin />
         <ListPlugin />
@@ -112,10 +66,28 @@ export default function Editor() {
         <ImagesPlugin />
         <TreeViewPlugin />
         <OnChangePlugin
-          handler={(editorState) => {
-            // console.log(JSON.stringify(editorState.toJSON(), null, 4));
+          handler={(editorState, editor) => {
+            console.log("ENTIRE EDITOR STATE", editorState);
+
+            setCustomFormats((currentCustomFormatMap) => {
+              const editorCustomFormatsMap = new Map(getCustomFormatNodes(editor).map((node) => [node.getCustomFormatKey(), node.getText()]));
+              console.log(currentCustomFormatMap, editorCustomFormatsMap);
+
+              // update custom fromats
+              editorCustomFormatsMap.forEach((value, key) => {
+                console.log(value, key);
+
+                const currentValue = currentCustomFormatMap.get(key);
+                const shouldUpdate = currentValue !== value;
+
+                if (shouldUpdate) currentCustomFormatMap.set(key, value);
+              });
+
+              return new Map(Array.from(currentCustomFormatMap));
+            });
           }}
         />
+        <div className="bg-blue-900 text-white p-2 text-xs rounded my-2">cfe state: {JSON.stringify(Array.from(customFormats))}</div>
         <DebugHTMLView />
       </LexicalComposer>
     </>

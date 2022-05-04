@@ -5,11 +5,9 @@ export default function OnChangePlugin({ handler }) {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    const unregister = editor.registerUpdateListener(() => {
-      handler(editor.getEditorState());
+    return editor.registerUpdateListener(() => {
+      handler(editor.getEditorState(), editor);
     });
-
-    return unregister;
   }, [editor, handler]);
 
   return null;
