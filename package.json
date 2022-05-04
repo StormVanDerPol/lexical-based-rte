@@ -9,6 +9,7 @@
   "dependencies": {
     "@lexical/link": "^0.2.4",
     "@lexical/list": "^0.2.4",
+    "@lexical/plain-text": "^0.2.5",
     "@lexical/react": "^0.2.4",
     "@lexical/rich-text": "^0.2.4",
     "@lexical/selection": "^0.2.4",

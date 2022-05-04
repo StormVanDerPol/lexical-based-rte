@@ -1,3 +1,4 @@
+import encodeHTMLEntities from "./encodeHTMLEntities";
 import parseTextFormat from "./parseTextFormat";
 
 function parseElementFormat(format) {
@@ -17,7 +18,7 @@ function parseElementFormat(format) {
 }
 
 const constructText = (string, bold, italic, underline) =>
-  `${underline ? "<u>" : ""}${italic ? "<em>" : ""}${bold ? "<strong>" : ""}${/* encode html entities here*/ string}${bold ? "</strong>" : ""}${italic ? "</em>" : ""}${underline ? "</u>" : ""}`;
+  `${underline ? "<u>" : ""}${italic ? "<em>" : ""}${bold ? "<strong>" : ""}${encodeHTMLEntities(string)}${bold ? "</strong>" : ""}${italic ? "</em>" : ""}${underline ? "</u>" : ""}`;
 
 export default function lexicalToHTML(nodeMap) {
   const root = nodeMap.get("root");
@@ -82,9 +83,10 @@ export default function lexicalToHTML(nodeMap) {
       }
       case "custom-format": {
         const customFormatKey = node.getCustomFormatKey();
-        const { bold, italic, underline } = node.getFormats();
-
-        return `<span data-type="custom-format" data-bold="${!!bold}" data-italic="${!!italic}" data-underline="${!!underline}">${customFormatKey}</span>`;
+        // data-text property does not exist in the data model currently, need to figure out a better solution or a way to fill it in for old letters.
+        const text = node.getText();
+        const { bold, italic, underline } = {}; // wip
+        return `<span data-type="custom-format" data-text="${encodeHTMLEntities(text)}" data-bold="${!!bold}" data-italic="${!!italic}" data-underline="${!!underline}">${customFormatKey}</span>`;
       }
     }
 
