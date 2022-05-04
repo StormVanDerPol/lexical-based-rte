@@ -26,7 +26,7 @@ export class ImageNode extends DecoratorNode {
   }
 
   decorate() {
-    return <img src={this.__src} />;
+    return <img alt="alts not available lol" src={this.__src} />;
   }
 }
 

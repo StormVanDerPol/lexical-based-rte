@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "parcel serve ./src/public/index.html",
+    "lint": "eslint .",
     "pages": "rm -rf dist && parcel build ./src/public/index.html --public-url /lexical-based-rte && gh-pages -d dist"
   },
   "dependencies": {
@@ -19,6 +20,18 @@
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.17.10",
+    "@babel/eslint-parser": "^7.17.0",
+    "@babel/preset-env": "^7.17.10",
+    "@babel/preset-react": "^7.16.7",
+    "eslint": "^8.14.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-react-hooks": "^4.5.0",
     "gh-pages": "^3.2.3",
     "parcel": "^2.4.1",
     "postcss": "^8.4.12",

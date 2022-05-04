@@ -23,7 +23,6 @@ import { mergeRegister, $getNearestNodeOfType } from "@lexical/utils";
 
 import $getSelectedNode from "../../utils/$getSelectedNode";
 import { INSERT_IMAGE_COMMAND } from "../imagesPlugin";
-import { FORMAT_CUSTOMFORMAT_COMMAND } from "../customFormatPlugin";
 import UrlIcon from "../../icons/url";
 import ImageIcon from "../../icons/image";
 
@@ -63,10 +62,10 @@ function FloatingLinkEditor({ editor }) {
     }
     const editorElem = editorRef.current;
 
-    if (editorElem === null) return;
+    if (editorElem === null) return false;
 
     const nativeSelection = window.getSelection();
-    const activeElement = document.activeElement;
+    const { activeElement } = document;
 
     const rootElement = editor.getRootElement();
     if (selection !== null && !nativeSelection.isCollapsed && rootElement !== null && rootElement.contains(nativeSelection.anchorNode)) {
@@ -158,11 +157,12 @@ function FloatingLinkEditor({ editor }) {
       />
 
       {isEditMode ? (
-        <button className="button secondary ml-2" onClick={confirmEdit}>
+        <button type="button" className="button secondary ml-2" onClick={confirmEdit}>
           confirm
         </button>
       ) : (
         <button
+          type="button"
           className="button secondary ml-2"
           onClick={() => {
             setEditMode(true);
@@ -273,7 +273,7 @@ export default function ToolbarPlugin() {
   const [canRedo, setCanRedo] = useState(false);
 
   const [currentBlock, setCurrentBlock] = useState("bullet list");
-  const [selectedElementKey, setSelectedElementKey] = useState(null);
+  // const [selectedElementKey, setSelectedElementKey] = useState(null);
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -284,7 +284,7 @@ export default function ToolbarPlugin() {
       const elementKey = element.getKey();
       const elementDOM = editor.getElementByKey(elementKey);
       if (elementDOM !== null) {
-        setSelectedElementKey(elementKey);
+        // setSelectedElementKey(elementKey);
         if ($isListNode(element)) {
           const parentList = $getNearestNodeOfType(anchorNode, ListNode);
           const type = parentList ? parentList.getTag() : element.getTag();
@@ -308,7 +308,7 @@ export default function ToolbarPlugin() {
         setIsLink(false);
       }
     }
-  }, []);
+  }, [editor]);
 
   const insertLink = useCallback(() => {
     if (!isLink) {
@@ -357,73 +357,74 @@ export default function ToolbarPlugin() {
       <BlockSelect editor={editor} currentBlock={currentBlock} />
 
       <button
+        type="button"
         onClick={() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
-          editor.dispatchCommand(FORMAT_CUSTOMFORMAT_COMMAND, "bold");
         }}
         className={`button ${isBold ? "primary" : "secondary"} lg font-bold`}
       >
         B
       </button>
       <button
+        type="button"
         onClick={() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
-          editor.dispatchCommand(FORMAT_CUSTOMFORMAT_COMMAND, "italic");
         }}
         className={`button ${isItalic ? "primary" : "secondary"} lg italic`}
       >
         I
       </button>
       <button
+        type="button"
         onClick={() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
-          editor.dispatchCommand(FORMAT_CUSTOMFORMAT_COMMAND, "underline");
         }}
         className={`button ${isUnderline ? "primary" : "secondary"} lg underline`}
       >
         U
       </button>
 
-      <button onClick={insertLink} className={`button ${isLink ? "primary" : "secondary"} lg underline`}>
+      <button type="button" onClick={insertLink} className={`button ${isLink ? "primary" : "secondary"} lg underline`}>
         <UrlIcon />
       </button>
 
       {isLink && createPortal(<FloatingLinkEditor editor={editor} />, document.body)}
 
-      <button onClick={() => editor.dispatchCommand(INSERT_LINE_BREAK_COMMAND)} className="button secondary lg">
+      <button type="button" onClick={() => editor.dispatchCommand(INSERT_LINE_BREAK_COMMAND)} className="button secondary lg">
         Line break
       </button>
 
-      <button onClick={() => editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND)} className="button secondary lg">
+      <button type="button" onClick={() => editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND)} className="button secondary lg">
         UL
       </button>
 
-      <button onClick={() => editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND)} className="button secondary lg">
+      <button type="button" onClick={() => editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND)} className="button secondary lg">
         OL
       </button>
 
-      <button disabled={!canUndo} onClick={() => editor.dispatchCommand(UNDO_COMMAND)} className="button secondary lg">
+      <button type="button" disabled={!canUndo} onClick={() => editor.dispatchCommand(UNDO_COMMAND)} className="button secondary lg">
         undo
       </button>
 
-      <button disabled={!canRedo} onClick={() => editor.dispatchCommand(REDO_COMMAND)} className="button secondary lg">
+      <button type="button" disabled={!canRedo} onClick={() => editor.dispatchCommand(REDO_COMMAND)} className="button secondary lg">
         redo
       </button>
 
-      <button className="button secondary lg" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left")}>
+      <button type="button" className="button secondary lg" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left")}>
         align left
       </button>
-      <button className="button secondary lg" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right")}>
+      <button type="button" className="button secondary lg" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right")}>
         align right
       </button>
-      <button className="button secondary lg" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "justify")}>
+      <button type="button" className="button secondary lg" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "justify")}>
         justify
       </button>
-      <button className="button secondary lg" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center")}>
+      <button type="button" className="button secondary lg" onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center")}>
         center
       </button>
 
       <button
+        type="button"
         onClick={() =>
           editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
             src: "https://www.thiscatdoesnotexist.com",

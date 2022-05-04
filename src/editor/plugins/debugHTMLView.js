@@ -29,11 +29,11 @@ export default function DebugHTMLView() {
       console.error(error);
       return [false, `INVALID: ${error.message}`];
     }
-  }, [editorStateStringFromHTML]);
+  }, [editor, editorStateStringFromHTML]);
   return (
     <>
       <div className="my-5 p-2 rounded bg-gray-200 shadow-md border border-gray-400">
-        <button className="button primary sm" onClick={() => setShowHTML((b) => !b)}>
+        <button type="button" className="button primary sm" onClick={() => setShowHTML((b) => !b)}>
           toggle html
         </button>
 
@@ -41,10 +41,9 @@ export default function DebugHTMLView() {
           <>
             <div className="text-gray-600 text-sm mt-2 mb-5">rendered HTML:</div>
 
-            <style></style>
-
             <div
               className="rendered-rich-text"
+              // eslint-disable-next-line react/no-danger
               dangerouslySetInnerHTML={{
                 __html: HTML,
               }}
@@ -57,6 +56,7 @@ export default function DebugHTMLView() {
 
       <div className="rounded p-2 bg-black">
         <button
+          type="button"
           className="button primary mb-2 xs"
           disabled={!isValid}
           onClick={() => {

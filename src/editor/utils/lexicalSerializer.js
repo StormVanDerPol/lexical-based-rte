@@ -47,62 +47,78 @@ export default function HTMLToLexical(htmlString) {
     const isElement = DOMNode.nodeType === 1;
 
     if (isElement) {
-      const format = DOMNode.style.textAlign;
+      const { textAlign } = DOMNode.style;
 
       switch (DOMNode.nodeName) {
         case "BODY":
-          const root = $getRoot();
-          root.setFormat();
-          Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, root));
+          {
+            const root = $getRoot();
+            root.setFormat();
+            Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, root));
+          }
           break;
 
         case "STRONG":
         case "EM":
         case "U":
-          const textNode = $createTextNodeFromElement(DOMNode, parentNode);
-          parentNode.append(textNode);
+          {
+            const textNode = $createTextNodeFromElement(DOMNode, parentNode);
+            parentNode.append(textNode);
+          }
           break;
 
         case "P":
-          const paragraphNode = $createParagraphNode();
-          paragraphNode.setFormat(format);
-          Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, paragraphNode));
-          parentNode.append(paragraphNode);
+          {
+            const paragraphNode = $createParagraphNode();
+            paragraphNode.setFormat(textAlign);
+            Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, paragraphNode));
+            parentNode.append(paragraphNode);
+          }
           break;
         case "UL":
         case "OL":
-          const listNode = $createListNode(DOMNode.nodeName.toLowerCase());
-          listNode.setFormat(format);
-          Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, listNode));
-          parentNode.append(listNode);
+          {
+            const listNode = $createListNode(DOMNode.nodeName.toLowerCase());
+            listNode.setFormat(textAlign);
+            Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, listNode));
+            parentNode.append(listNode);
+          }
           break;
 
         case "BR":
-          const breakNode = $createLineBreakNode();
-          parentNode.append(breakNode);
+          {
+            const breakNode = $createLineBreakNode();
+            parentNode.append(breakNode);
+          }
           break;
 
         case "A":
-          const url = DOMNode.getAttribute("href");
-          const linkNode = $createLinkNode(url);
-          Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, linkNode));
-          parentNode.append(linkNode);
+          {
+            const url = DOMNode.getAttribute("href");
+            const linkNode = $createLinkNode(url);
+            Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, linkNode));
+            parentNode.append(linkNode);
+          }
           break;
 
         case "LI":
-          const listItemNode = $createListItemNode();
-          listItemNode.setFormat(format);
-          Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, listItemNode));
-          parentNode.append(listItemNode);
+          {
+            const listItemNode = $createListItemNode();
+            listItemNode.setFormat(textAlign);
+            Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, listItemNode));
+            parentNode.append(listItemNode);
+          }
           break;
 
         case "IMG":
-          const src = DOMNode.getAttribute("src");
-          const imageNode = $createImageNode(src);
-          parentNode.append(imageNode);
+          {
+            const src = DOMNode.getAttribute("src");
+            const imageNode = $createImageNode(src);
+            parentNode.append(imageNode);
+          }
           break;
 
-        case "SPAN":
+        case "SPAN": {
           const type = DOMNode.getAttribute("data-type");
 
           if (type === "custom-format") {
@@ -112,10 +128,10 @@ export default function HTMLToLexical(htmlString) {
             const italic = DOMNode.getAttribute("data-italic") === "true";
             const underline = DOMNode.getAttribute("data-underline") === "true";
 
-            let format = 0;
-            if (bold) format += 1;
-            if (italic) format += 2;
-            if (underline) format += 8;
+            // let format = 0;
+            // if (bold) format += 1;
+            // if (italic) format += 2;
+            // if (underline) format += 8;
 
             const text = decodeHTMLEntities(DOMNode.getAttribute("data-text"));
 
@@ -125,16 +141,17 @@ export default function HTMLToLexical(htmlString) {
             if (underline) customFormatNode.setFormat("underline");
 
             parentNode.append(customFormatNode);
-
-            break;
           }
+          break;
+        }
 
-        default:
+        default: {
           console.warn("UNHANDLED NODE - defaulting to paragraph node. High chance this breaks things.", DOMNode);
           const node = $createParagraphNode();
-          node.setFormat(format);
+          node.setFormat(textAlign);
           Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, node));
           parentNode.append(node);
+        }
       }
     } else if (isText) {
       const textNode = $createTextNodeFromElement(DOMNode, parentNode);

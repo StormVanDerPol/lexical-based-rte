@@ -8,9 +8,6 @@ import {
   $createParagraphNode,
   $createTextNode,
   $getRoot,
-  $getSelection,
-  $isRangeSelection,
-  COMMAND_PRIORITY_EDITOR,
   DELETE_CHARACTER_COMMAND,
   DELETE_LINE_COMMAND,
   DELETE_WORD_COMMAND,
@@ -205,55 +202,13 @@ export function NestedCustomFormatEditorPlugin({ text }) {
   React.useLayoutEffect(() => {
     return registerNestedCustomFormatEditor(editor, text);
     // linter can piss off here
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor]);
 
   return <LexicalContentEditable className="inline outline-none bg-blue-100" />;
 }
 
-export function getCustomFormatNodes(editor) {
-  return Array.from(editor.getEditorState()._nodeMap)
-    .filter(([, node]) => $isCustomFormatNode(node))
-    .map(([, node]) => node);
-}
-
-export function CustomFormatToolbarPlugin({ customFormats }) {
-  const [editor] = useLexicalComposerContext();
-
-  const [used, setUsed] = React.useState([]);
-
-  React.useEffect(() => {
-    return editor.registerUpdateListener(() => {
-      const customFormatKeys = getCustomFormatNodes(editor).map((node) => node.__customFormatKey);
-      setUsed(customFormatKeys);
-    });
-  }, [editor]);
-
-  return (
-    <>
-      {Array.from(customFormats).map(([customFormatKey, text]) => {
-        if (used.includes(customFormatKey)) return null;
-
-        return (
-          <button
-            key={customFormatKey}
-            onClick={() =>
-              editor.dispatchCommand(INSERT_CUSTOMFORMAT_COMMAND, {
-                customFormatKey,
-                text,
-              })
-            }
-            className="button secondary lg"
-          >
-            +{text}
-          </button>
-        );
-      })}
-    </>
-  );
-}
-
 export const INSERT_CUSTOMFORMAT_COMMAND = createCommand();
-export const FORMAT_CUSTOMFORMAT_COMMAND = createCommand();
 
 const NESTED_CUSTOM_FORMAT_EDITOR_CONFIG = {
   onError(e) {
@@ -271,15 +226,18 @@ function Spancer() {
 function CustomFormatDecoratorElement({ text, nodeKey }) {
   const [editor] = useLexicalComposerContext();
 
-  const onChangeHandler = (value) => {
-    const plaintext = toPlainText(value);
+  const onChangeHandler = React.useCallback(
+    (value) => {
+      const plaintext = toPlainText(value);
 
-    editor.update(() => {
-      const currentNode = $getNodeByKey(nodeKey);
-      console.log(`SETTING TEXT OF NODE ${nodeKey}`, plaintext);
-      currentNode.setText(plaintext);
-    });
-  };
+      editor.update(() => {
+        const currentNode = $getNodeByKey(nodeKey);
+        console.log(`SETTING TEXT OF NODE ${nodeKey}`, plaintext);
+        currentNode.setText(plaintext);
+      });
+    },
+    [nodeKey, editor],
+  );
 
   return (
     <>
@@ -295,6 +253,7 @@ function CustomFormatDecoratorElement({ text, nodeKey }) {
 
 export class CustomFormatNode extends DecoratorNode {
   __customFormatKey = "";
+
   __text = "";
 
   static getType() {
@@ -347,6 +306,12 @@ export function $isCustomFormatNode(node) {
   return node instanceof CustomFormatNode;
 }
 
+export function getCustomFormatNodes(editor) {
+  return Array.from(editor.getEditorState()._nodeMap)
+    .filter(([, node]) => $isCustomFormatNode(node))
+    .map(([, node]) => node);
+}
+
 /* main plugin to be used in actual CFE */
 export default function CustomFormatPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -372,4 +337,41 @@ export default function CustomFormatPlugin() {
   }, [editor]);
 
   return null;
+}
+
+export function CustomFormatToolbarPlugin({ customFormats }) {
+  const [editor] = useLexicalComposerContext();
+
+  const [used, setUsed] = React.useState([]);
+
+  React.useEffect(() => {
+    return editor.registerUpdateListener(() => {
+      const customFormatKeys = getCustomFormatNodes(editor).map((node) => node.__customFormatKey);
+      setUsed(customFormatKeys);
+    });
+  }, [editor]);
+
+  return (
+    <>
+      {Array.from(customFormats).map(([customFormatKey, text]) => {
+        if (used.includes(customFormatKey)) return null;
+
+        return (
+          <button
+            type="button"
+            key={customFormatKey}
+            onClick={() =>
+              editor.dispatchCommand(INSERT_CUSTOMFORMAT_COMMAND, {
+                customFormatKey,
+                text,
+              })
+            }
+            className="button secondary lg"
+          >
+            +{text}
+          </button>
+        );
+      })}
+    </>
+  );
 }

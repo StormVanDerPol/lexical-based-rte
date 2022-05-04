@@ -88,6 +88,7 @@ export default function lexicalToHTML(nodeMap) {
         const { bold, italic, underline } = {}; // wip
         return `<span data-type="custom-format" data-text="${encodeHTMLEntities(text)}" data-bold="${!!bold}" data-italic="${!!italic}" data-underline="${!!underline}">${customFormatKey}</span>`;
       }
+      default:
     }
 
     if (type === "linebreak") return "<br>";

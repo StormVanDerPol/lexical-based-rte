@@ -46,50 +46,48 @@ export default function Editor() {
   );
 
   return (
-    <>
-      <LexicalComposer initialConfig={editorConfig}>
-        <div className="relative bg-gray-100 rounded-md border border-transparent focus-within:bg-blue-50 focus-within:border-blue-700 transition-colors">
-          <div className="p-2">
-            <RichTextPlugin contentEditable={<ContentEditable className="outline-none resize-none" style={{ minHeight: "150px", tabSize: "1" }} />} />
-            <CustomFormatPlugin />
-          </div>
-          <ToolbarContainer>
-            <ToolbarPlugin />
-            <CustomFormatToolbarPlugin customFormats={customFormats} />
-          </ToolbarContainer>
+    <LexicalComposer initialConfig={editorConfig}>
+      <div className="relative bg-gray-100 rounded-md border border-transparent focus-within:bg-blue-50 focus-within:border-blue-700 transition-colors">
+        <div className="p-2">
+          <RichTextPlugin contentEditable={<ContentEditable className="outline-none resize-none" style={{ minHeight: "150px", tabSize: "1" }} />} />
+          <CustomFormatPlugin />
         </div>
-        <LinkPlugin />
-        <AutoLinkPlugin />
-        <ListPlugin />
-        <HistoryPlugin />
-        <AutoFocusPlugin />
-        <ImagesPlugin />
-        <TreeViewPlugin />
-        <OnChangePlugin
-          handler={(editorState, editor) => {
-            console.log("ENTIRE EDITOR STATE", editorState);
+        <ToolbarContainer>
+          <ToolbarPlugin />
+          <CustomFormatToolbarPlugin customFormats={customFormats} />
+        </ToolbarContainer>
+      </div>
+      <LinkPlugin />
+      <AutoLinkPlugin />
+      <ListPlugin />
+      <HistoryPlugin />
+      <AutoFocusPlugin />
+      <ImagesPlugin />
+      <TreeViewPlugin />
+      <OnChangePlugin
+        handler={(editorState, editor) => {
+          console.log("ENTIRE EDITOR STATE", editorState);
 
-            setCustomFormats((currentCustomFormatMap) => {
-              const editorCustomFormatsMap = new Map(getCustomFormatNodes(editor).map((node) => [node.getCustomFormatKey(), node.getText()]));
-              console.log(currentCustomFormatMap, editorCustomFormatsMap);
+          setCustomFormats((currentCustomFormatMap) => {
+            const editorCustomFormatsMap = new Map(getCustomFormatNodes(editor).map((node) => [node.getCustomFormatKey(), node.getText()]));
+            console.log(currentCustomFormatMap, editorCustomFormatsMap);
 
-              // update custom fromats
-              editorCustomFormatsMap.forEach((value, key) => {
-                console.log(value, key);
+            // update custom fromats
+            editorCustomFormatsMap.forEach((value, key) => {
+              console.log(value, key);
 
-                const currentValue = currentCustomFormatMap.get(key);
-                const shouldUpdate = currentValue !== value;
+              const currentValue = currentCustomFormatMap.get(key);
+              const shouldUpdate = currentValue !== value;
 
-                if (shouldUpdate) currentCustomFormatMap.set(key, value);
-              });
-
-              return new Map(Array.from(currentCustomFormatMap));
+              if (shouldUpdate) currentCustomFormatMap.set(key, value);
             });
-          }}
-        />
-        <div className="bg-blue-900 text-white p-2 text-xs rounded my-2">cfe state: {JSON.stringify(Array.from(customFormats))}</div>
-        <DebugHTMLView />
-      </LexicalComposer>
-    </>
+
+            return new Map(Array.from(currentCustomFormatMap));
+          });
+        }}
+      />
+      <div className="bg-blue-900 text-white p-2 text-xs rounded my-2">cfe state: {JSON.stringify(Array.from(customFormats))}</div>
+      <DebugHTMLView />
+    </LexicalComposer>
   );
 }

@@ -10,7 +10,7 @@ export default function TreeViewPlugin() {
   return (
     <div className="overflow-hidden rounded-md mt-4">
       <div className="p-2 bg-gray-200">
-        <button className="button primary sm" onClick={() => setIsOpen((b) => !b)}>
+        <button type="button" className="button primary sm" onClick={() => setIsOpen((b) => !b)}>
           toggle tree view
         </button>
       </div>

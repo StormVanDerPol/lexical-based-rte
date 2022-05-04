@@ -44,5 +44,6 @@ export default function parseTextFormat(format) {
     }
     default:
       console.warn(`[parse text format]: text format ${format} is an invalid format integer`);
+      return formats;
   }
 }
