@@ -205,7 +205,7 @@ export function NestedCustomFormatEditorPlugin({ text }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor]);
 
-  return <LexicalContentEditable className="inline-block outline-none" style={{ minWidth: "10px" }} />;
+  return <LexicalContentEditable className="inline-block outline-none bg-blue-200 rounded-sm" style={{ minWidth: "10px" }} />;
 }
 
 export const INSERT_CUSTOMFORMAT_COMMAND = createCommand();
@@ -219,9 +219,9 @@ const NESTED_CUSTOM_FORMAT_EDITOR_CONFIG = {
   },
 };
 
-function Spancer() {
-  return <span className="spancer"> </span>;
-}
+// function Spancer() {
+//   return <span className="spancer"> </span>;
+// }
 
 function CustomFormatDecoratorElement({ text, nodeKey }) {
   const [editor] = useLexicalComposerContext();
@@ -242,14 +242,14 @@ function CustomFormatDecoratorElement({ text, nodeKey }) {
   return (
     // spancers are neccessary for the android fix to work
     // hopefully the div wrapper doesn't break any mobile shenanigans
-    <div className="inline bg-blue-200 rounded-sm">
-      <Spancer />
+    <>
+      {/* <Spancer /> */}
       <LexicalComposer initialConfig={NESTED_CUSTOM_FORMAT_EDITOR_CONFIG}>
         <NestedCustomFormatEditorPlugin text={text} />
         <OnChangePlugin handler={onChangeHandler} />
       </LexicalComposer>
-      <Spancer />
-    </div>
+      {/* <Spancer /> */}
+    </>
   );
 }
 
