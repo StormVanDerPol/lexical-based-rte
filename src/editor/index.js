@@ -24,7 +24,7 @@ import ImagesPlugin from "./plugins/imagesPlugin";
 import { ImageNode } from "./nodes/imageNode";
 import CustomFormatPlugin, { CustomFormatNode, CustomFormatToolbarPlugin, getCustomFormatNodes } from "./plugins/customFormatPlugin";
 import ToolbarContainer from "./plugins/toolbar/toolbarContainer";
-import OnChangePlugin from "./plugins/onChangePlugin";
+import OnUpdatePlugin from "./plugins/onUpdatePlugin";
 
 const editorConfig = {
   theme,
@@ -36,7 +36,7 @@ const editorConfig = {
 };
 
 export default function Editor() {
-  const [customFormats, setCustomFormats] = useState(
+  const [customFormatMap, setCustomFormatMap] = useState(
     new Map([
       ["%{city}", "[Plaats]"],
       ["%{date}", "21 april 2022"],
@@ -54,7 +54,7 @@ export default function Editor() {
         </div>
         <ToolbarContainer>
           <ToolbarPlugin />
-          <CustomFormatToolbarPlugin customFormats={customFormats} />
+          <CustomFormatToolbarPlugin customFormats={customFormatMap} />
         </ToolbarContainer>
       </div>
       <LinkPlugin />
@@ -64,27 +64,42 @@ export default function Editor() {
       <AutoFocusPlugin />
       <ImagesPlugin />
       <TreeViewPlugin />
-      <OnChangePlugin
+      <OnUpdatePlugin
         handler={(editorState, editor) => {
-          // todo: less renders
-          setCustomFormats((currentCustomFormatMap) => {
-            const editorCustomFormatsMap = new Map(getCustomFormatNodes(editor).map((node) => [node.getCustomFormatKey(), node.getText()]));
+          const editorCustomFormatMap = new Map(getCustomFormatNodes(editor).map((node) => [node.getCustomFormatKey(), node.getText()]));
+          const newCustomFormatMap = new Map(Array.from(customFormatMap));
 
-            // update custom fromats
-            editorCustomFormatsMap.forEach((value, key) => {
-              const currentValue = currentCustomFormatMap.get(key);
-              const shouldUpdate = currentValue !== value;
+          // update custom fromats
+          editorCustomFormatMap.forEach((value, key) => {
+            const currentValue = newCustomFormatMap.get(key);
+            const shouldUpdate = currentValue !== value;
 
-              if (shouldUpdate) currentCustomFormatMap.set(key, value);
-            });
-
-            return new Map(Array.from(currentCustomFormatMap));
+            if (shouldUpdate) newCustomFormatMap.set(key, value);
           });
+
+          const hasChanges = (() => {
+            let test;
+            if (customFormatMap.size !== newCustomFormatMap.size) {
+              return true;
+            }
+            for (const [key, value] of customFormatMap) {
+              test = newCustomFormatMap.get(key);
+              if (test !== value || (test === undefined && !newCustomFormatMap.has(key))) {
+                return true;
+              }
+            }
+            return false;
+          })();
+
+          if (hasChanges) {
+            console.log("CUSTOM FORMAT CHANGE DETECTED");
+            setCustomFormatMap(newCustomFormatMap);
+          }
         }}
       />
       <pre className="bg-blue-900 text-white p-2 text-xs rounded my-2">
         {`cfe state:\n`}
-        {JSON.stringify(Array.from(customFormats), null, 4)}
+        {JSON.stringify(Array.from(customFormatMap), null, 4)}
       </pre>
       <DebugHTMLView />
     </LexicalComposer>

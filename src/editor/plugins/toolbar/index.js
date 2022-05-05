@@ -25,6 +25,7 @@ import $getSelectedNode from "../../utils/$getSelectedNode";
 import { INSERT_IMAGE_COMMAND } from "../imagesPlugin";
 import UrlIcon from "../../icons/url";
 import ImageIcon from "../../icons/image";
+import { FORMAT_CUSTOMFORMAT_COMMAND, getCustomFormatNodes } from "../customFormatPlugin";
 
 const LowPriority = 1;
 
@@ -359,7 +360,9 @@ export default function ToolbarPlugin() {
       <button
         type="button"
         onClick={() => {
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
+          // editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
+
+          editor.dispatchCommand(FORMAT_CUSTOMFORMAT_COMMAND, "bold");
         }}
         className={`button ${isBold ? "primary" : "secondary"} lg font-bold`}
       >
@@ -368,7 +371,8 @@ export default function ToolbarPlugin() {
       <button
         type="button"
         onClick={() => {
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
+          // editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
+          editor.dispatchCommand(FORMAT_CUSTOMFORMAT_COMMAND, "italic");
         }}
         className={`button ${isItalic ? "primary" : "secondary"} lg italic`}
       >
@@ -377,7 +381,8 @@ export default function ToolbarPlugin() {
       <button
         type="button"
         onClick={() => {
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
+          // editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
+          editor.dispatchCommand(FORMAT_CUSTOMFORMAT_COMMAND, "underline");
         }}
         className={`button ${isUnderline ? "primary" : "secondary"} lg underline`}
       >

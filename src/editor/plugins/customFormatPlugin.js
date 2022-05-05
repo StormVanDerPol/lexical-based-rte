@@ -22,6 +22,9 @@ import {
   REMOVE_TEXT_COMMAND,
   DecoratorNode,
   $getNodeByKey,
+  FOCUS_COMMAND,
+  BLUR_COMMAND,
+  $setSelection,
 } from "lexical";
 import LexicalComposer from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -30,7 +33,7 @@ import LexicalContentEditable from "@lexical/react/LexicalContentEditable";
 import { $moveCharacter, $shouldOverrideDefaultCharacterSelection } from "@lexical/selection";
 import { mergeRegister } from "@lexical/utils";
 
-import OnChangePlugin from "./onChangePlugin";
+import OnUpdatePlugin from "./onUpdatePlugin";
 import toPlainText from "../utils/plaintextSerializer";
 
 function hydrateNestedCustomFormatEditor(editor, text) {
@@ -42,8 +45,12 @@ function hydrateNestedCustomFormatEditor(editor, text) {
   });
 }
 
+export const FORMAT_CUSTOMFORMAT_COMMAND = createCommand();
+
 /* registers every command available in the nested editor. */
-function registerNestedCustomFormatEditor(editor, text) {
+function registerNestedCustomFormatEditor(editor, text, parentEditor, nodeKey) {
+  let blurTimeout = null;
+
   const removeListener = mergeRegister(
     /* basic text editing commands */
     editor.registerCommand(
@@ -145,6 +152,7 @@ function registerNestedCustomFormatEditor(editor, text) {
       },
       COMMAND_PRIORITY_EDITOR,
     ),
+
     editor.registerCommand(
       KEY_BACKSPACE_COMMAND,
       (event) => {
@@ -191,21 +199,58 @@ function registerNestedCustomFormatEditor(editor, text) {
       },
       COMMAND_PRIORITY_EDITOR,
     ),
+    // focus
+    editor.registerCommand(
+      FOCUS_COMMAND,
+      () => {
+        if (blurTimeout) clearTimeout(blurTimeout);
+
+        const customFormatIsFocused = parentEditor.getEditorState().read(() => $getNodeByKey(nodeKey).getIsFocused());
+
+        parentEditor.update(() => {
+          $setSelection(null);
+          if (!customFormatIsFocused) $getNodeByKey(nodeKey).setIsFocused(true);
+        });
+      },
+      COMMAND_PRIORITY_EDITOR,
+    ),
+    editor.registerCommand(
+      BLUR_COMMAND,
+      () => {
+        const isFocused = parentEditor.getEditorState().read(() => $getNodeByKey(nodeKey).getIsFocused());
+
+        editor.update(() => {
+          $setSelection(null);
+        });
+
+        if (isFocused)
+          blurTimeout = setTimeout(
+            () =>
+              parentEditor.update(() => {
+                $getNodeByKey(nodeKey).setIsFocused(false);
+              }),
+            250,
+          );
+      },
+      COMMAND_PRIORITY_EDITOR,
+    ),
   );
   hydrateNestedCustomFormatEditor(editor, text);
   return removeListener;
 }
 
-export function NestedCustomFormatEditorPlugin({ text }) {
+export function NestedCustomFormatEditorPlugin({ parentEditor, text, nodeKey, formats }) {
   const [editor] = useLexicalComposerContext();
 
   React.useLayoutEffect(() => {
-    return registerNestedCustomFormatEditor(editor, text);
+    return registerNestedCustomFormatEditor(editor, text, parentEditor, nodeKey);
     // linter can piss off here
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editor]);
+  }, []);
 
-  return <LexicalContentEditable className="inline-block outline-none bg-blue-200 rounded-sm" style={{ minWidth: "10px" }} />;
+  const { bold, italic, underline } = formats;
+
+  return <LexicalContentEditable className={`inline outline-none ${bold ? "font-bold" : ""} ${italic ? "italic" : ""} ${underline ? "underline" : ""}`} style={{ minWidth: "10px" }} />;
 }
 
 export const INSERT_CUSTOMFORMAT_COMMAND = createCommand();
@@ -215,7 +260,7 @@ const NESTED_CUSTOM_FORMAT_EDITOR_CONFIG = {
     console.error("[nested cfe]", e);
   },
   theme: {
-    paragraph: "inline",
+    paragraph: "inline bg-blue-200 rounded-sm",
   },
 };
 
@@ -223,13 +268,16 @@ const NESTED_CUSTOM_FORMAT_EDITOR_CONFIG = {
 //   return <span className="spancer"> </span>;
 // }
 
-function CustomFormatDecoratorElement({ text, nodeKey }) {
+function CustomFormatDecoratorElement({ text, nodeKey, formats }) {
   const [editor] = useLexicalComposerContext();
 
-  const onChangeHandler = React.useCallback(
+  const onUpdateHandler = React.useCallback(
     (editorState) => {
       const plaintext = toPlainText(editorState);
-      editor.update(() => $getNodeByKey(nodeKey).setText(plaintext));
+      editor.update(() => {
+        const node = $getNodeByKey(nodeKey);
+        node.setText(plaintext);
+      });
     },
     [nodeKey, editor],
   );
@@ -240,8 +288,8 @@ function CustomFormatDecoratorElement({ text, nodeKey }) {
     <>
       {/* <Spancer /> */}
       <LexicalComposer initialConfig={NESTED_CUSTOM_FORMAT_EDITOR_CONFIG}>
-        <NestedCustomFormatEditorPlugin text={text} />
-        <OnChangePlugin handler={onChangeHandler} />
+        <NestedCustomFormatEditorPlugin formats={formats} text={text} parentEditor={editor} nodeKey={nodeKey} />
+        <OnUpdatePlugin handler={onUpdateHandler} />
       </LexicalComposer>
       {/* <Spancer /> */}
     </>
@@ -253,18 +301,24 @@ export class CustomFormatNode extends DecoratorNode {
 
   __text = "";
 
+  __isFocused = undefined;
+
+  __formats = { bold: false, italic: false, underline: false };
+
   static getType() {
     return "custom-format";
   }
 
   static clone(node) {
-    return new CustomFormatNode(node.__customFormatKey, node.__text, node.__key);
+    return new CustomFormatNode(node.__customFormatKey, node.__text, node.__isFocused, node.__formats, node.__key);
   }
 
-  constructor(customFormatKey, text, key) {
+  constructor(customFormatKey, text, isFocused, formats, key) {
     super(key);
     this.__customFormatKey = customFormatKey;
     this.__text = text;
+    this.__isFocused = isFocused;
+    this.__formats = formats;
   }
 
   createDOM() {
@@ -290,13 +344,31 @@ export class CustomFormatNode extends DecoratorNode {
     return this.__customFormatKey;
   }
 
+  getIsFocused() {
+    return this.__isFocused;
+  }
+
+  setIsFocused(isFocused) {
+    const writable = this.getWritable();
+    writable.__isFocused = isFocused;
+  }
+
+  getFormats() {
+    return this.__formats;
+  }
+
+  setFormat(format) {
+    const writable = this.getWritable();
+    writable.__formats[format] = !writable.__formats[format];
+  }
+
   decorate(editor) {
-    return <CustomFormatDecoratorElement editor={editor} customFormatKey={this.__customFormatKey} text={this.__text} nodeKey={this.__key} />;
+    return <CustomFormatDecoratorElement editor={editor} customFormatKey={this.__customFormatKey} text={this.__text} nodeKey={this.__key} formats={this.__formats} />;
   }
 }
 
 export function $createCustomFormatNode(customFormatKey, text) {
-  return new CustomFormatNode(customFormatKey, text);
+  return new CustomFormatNode(customFormatKey, text, false, { bold: false, italic: false, underline: false });
 }
 
 export function $isCustomFormatNode(node) {
@@ -304,6 +376,7 @@ export function $isCustomFormatNode(node) {
 }
 
 export function getCustomFormatNodes(editor) {
+  // todo: use public apis here
   return Array.from(editor.getEditorState()._nodeMap)
     .filter(([, node]) => $isCustomFormatNode(node))
     .map(([, node]) => node);
@@ -316,20 +389,35 @@ export default function CustomFormatPlugin() {
   React.useEffect(() => {
     if (!editor.hasNodes([CustomFormatNode])) throw new Error("Custom format plugin: CustomFormatNode not registered on editor");
 
-    return editor.registerCommand(
-      INSERT_CUSTOMFORMAT_COMMAND,
-      (payload) => {
-        const selection = $getSelection();
-        if ($isRangeSelection(selection)) {
-          if ($isRootNode(selection.anchor.getNode())) {
-            selection.insertParagraph();
+    return mergeRegister(
+      editor.registerCommand(
+        INSERT_CUSTOMFORMAT_COMMAND,
+        (payload) => {
+          const selection = $getSelection();
+          if ($isRangeSelection(selection)) {
+            if ($isRootNode(selection.anchor.getNode())) {
+              selection.insertParagraph();
+            }
+            const customFormatNode = $createCustomFormatNode(payload.customFormatKey, payload.text);
+            selection.insertNodes([customFormatNode]);
           }
-          const customFormatNode = $createCustomFormatNode(payload.customFormatKey, payload.text);
-          selection.insertNodes([customFormatNode]);
-        }
-        return true;
-      },
-      COMMAND_PRIORITY_EDITOR,
+          return true;
+        },
+        COMMAND_PRIORITY_EDITOR,
+      ),
+      // wack
+      editor.registerCommand(
+        FORMAT_CUSTOMFORMAT_COMMAND,
+        (payload) => {
+          const focusedCustomFormatNodes = getCustomFormatNodes(editor).filter((node) => node.getIsFocused());
+          editor.update(() =>
+            focusedCustomFormatNodes.forEach((node) => {
+              node.setFormat(payload);
+            }),
+          );
+        },
+        COMMAND_PRIORITY_EDITOR,
+      ),
     );
   }, [editor]);
 
