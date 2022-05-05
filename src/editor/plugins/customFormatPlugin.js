@@ -227,14 +227,9 @@ function CustomFormatDecoratorElement({ text, nodeKey }) {
   const [editor] = useLexicalComposerContext();
 
   const onChangeHandler = React.useCallback(
-    (value) => {
-      const plaintext = toPlainText(value);
-
-      editor.update(() => {
-        const currentNode = $getNodeByKey(nodeKey);
-        console.log(`SETTING TEXT OF NODE ${nodeKey}`, plaintext);
-        currentNode.setText(plaintext);
-      });
+    (editorState) => {
+      const plaintext = toPlainText(editorState);
+      editor.update(() => $getNodeByKey(nodeKey).setText(plaintext));
     },
     [nodeKey, editor],
   );

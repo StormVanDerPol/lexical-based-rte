@@ -66,16 +66,11 @@ export default function Editor() {
       <TreeViewPlugin />
       <OnChangePlugin
         handler={(editorState, editor) => {
-          console.log("ENTIRE EDITOR STATE", editorState);
-
           setCustomFormats((currentCustomFormatMap) => {
             const editorCustomFormatsMap = new Map(getCustomFormatNodes(editor).map((node) => [node.getCustomFormatKey(), node.getText()]));
-            console.log(currentCustomFormatMap, editorCustomFormatsMap);
 
             // update custom fromats
             editorCustomFormatsMap.forEach((value, key) => {
-              console.log(value, key);
-
               const currentValue = currentCustomFormatMap.get(key);
               const shouldUpdate = currentValue !== value;
 
