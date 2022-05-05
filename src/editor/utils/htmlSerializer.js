@@ -51,7 +51,7 @@ function serializeNode(node) {
     case "custom-format": {
       const customFormatKey = node.getCustomFormatKey();
       const text = node.getText();
-      const { bold, italic, underline } = {}; // wip
+      const { bold, italic, underline } = node.getFormats(); // wip
       return `<span data-type="custom-format" data-text="${encodeHTMLEntities(text)}" data-bold="${!!bold}" data-italic="${!!italic}" data-underline="${!!underline}">${customFormatKey}</span>`;
     }
     // text
