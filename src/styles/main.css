@@ -57,6 +57,18 @@
   @apply underline;
 }
 
+.rendered-rich-text h1 {
+  @apply text-2xl font-medium leading-5 mb-4 first:mt-0 mt-8;
+}
+
+.rendered-rich-text h2 {
+  @apply text-xl font-semibold mb-2 first:mt-0 mt-6;
+}
+
+.rendered-rich-text blockquote {
+  @apply border-l-4 border-gray-400 pl-2 m-2 italic text-gray-700;
+}
+
 .spancer {
   letter-spacing: -2px;
 }

@@ -32,12 +32,15 @@ function serializeNode(node) {
       return `<p>${node.getChildren().map(serializeNode).join("") || "\u200B"}</p>`;
     case "listitem":
       return `<li>${node.getChildren().map(serializeNode).join("")}</li>`;
-    case "list": {
-      const listTag = node.getTag();
-      return `<${listTag}>${node.getChildren().map(serializeNode).join("")}</${listTag}>`;
+    case "list":
+    case "heading": {
+      const tagName = node.getTag();
+      return `<${tagName}>${node.getChildren().map(serializeNode).join("")}</${tagName}>`;
     }
+    case "quote":
+      return `<blockquote>${node.getChildren().map(serializeNode).join("")}</blockquote>`;
     case "link": {
-      const url = node.getUrl();
+      const url = node.getURL();
       return `<a href="${encodeHTMLEntities(url)}">${node.getChildren().map(serializeNode).join("")}</a>`;
     }
     // linebreak
@@ -61,7 +64,7 @@ function serializeNode(node) {
     }
     // unknown
     default:
-      console.warn(`[lexical to html]: no serialization conditions were met for node ${node.getKey()}`);
+      console.warn(`[lexical to html]: no serialization conditions were met for node ${node.getKey()}`, node);
       return "";
   }
 }

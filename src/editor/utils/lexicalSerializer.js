@@ -1,6 +1,7 @@
 import { $createLinkNode, LinkNode } from "@lexical/link";
 import { $createListItemNode, $createListNode, ListItemNode, ListNode } from "@lexical/list";
 import { $createLineBreakNode, $createParagraphNode, $createTextNode, $getRoot, createEditor } from "lexical";
+import { $createHeadingNode, $createQuoteNode, HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { $createCustomFormatNode, CustomFormatNode } from "../plugins/customFormatPlugin";
 import { $createImageNode, ImageNode } from "../nodes/imageNode";
 import decodeHTMLEntities from "./decodeHTMLEntities";
@@ -34,7 +35,7 @@ const $createTextNodeFromElement = (element) => {
 
 export default function HTMLToLexical(htmlString) {
   const editor = createEditor({
-    nodes: [ListItemNode, ListNode, LinkNode, ImageNode, CustomFormatNode],
+    nodes: [ListItemNode, ListNode, LinkNode, ImageNode, CustomFormatNode, HeadingNode, QuoteNode],
     onError: (e) => {
       console.error("[HTML TO LEXICAL ERROR]:", e);
     },
@@ -82,6 +83,25 @@ export default function HTMLToLexical(htmlString) {
             listNode.setFormat(textAlign);
             Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, listNode));
             parentNode.append(listNode);
+          }
+          break;
+
+        case "H1":
+        case "H2":
+          {
+            const headingNode = $createHeadingNode(DOMNode.nodeName.toLowerCase());
+            headingNode.setFormat(textAlign);
+            Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, headingNode));
+            parentNode.append(headingNode);
+          }
+          break;
+
+        case "BLOCKQUOTE":
+          {
+            const blockQuoteNode = $createQuoteNode();
+            blockQuoteNode.setFormat(textAlign);
+            Array.from(DOMNode.childNodes).map((childDOMNode) => domToLexical(childDOMNode, blockQuoteNode));
+            parentNode.append(blockQuoteNode);
           }
           break;
 
