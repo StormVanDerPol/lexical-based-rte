@@ -66,6 +66,7 @@ export default function Editor() {
       <TreeViewPlugin />
       <OnChangePlugin
         handler={(editorState, editor) => {
+          // todo: less renders
           setCustomFormats((currentCustomFormatMap) => {
             const editorCustomFormatsMap = new Map(getCustomFormatNodes(editor).map((node) => [node.getCustomFormatKey(), node.getText()]));
 

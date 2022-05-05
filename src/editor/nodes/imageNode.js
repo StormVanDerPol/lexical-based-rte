@@ -16,6 +16,10 @@ export class ImageNode extends DecoratorNode {
     this.__src = src;
   }
 
+  getSrc() {
+    return this.__src;
+  }
+
   createDOM() {
     const div = document.createElement("div");
     return div;

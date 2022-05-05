@@ -11,11 +11,9 @@ export default function DebugHTMLView() {
   const [HTML, setHTML] = useState("");
 
   useEffect(() => {
-    const unregister = editor.registerUpdateListener(() => {
-      setHTML(lexicalToHTML(editor.getEditorState()._nodeMap));
+    return editor.registerUpdateListener(() => {
+      setHTML(lexicalToHTML(editor.getEditorState()));
     });
-
-    return unregister;
   }, [editor]);
 
   const editorStateStringFromHTML = useMemo(() => JSON.stringify(HTMLToLexical(HTML), null, 4), [HTML]);
