@@ -13,5 +13,5 @@
 - [x] align everything on block level
 - [x] !!! CFE: uneditable void nodes whose content are external state completely unrelated to the text editor itself & buttons to insert these.
 - [x] build an editor state from HTML and apply it to the editor
-- [ ] ~~~!!! "controlled" behaviour
+- [ ] ~~~"controlled" behaviour~~~
 - [x] serializing & deserializing (html > lexical & vice versa)
