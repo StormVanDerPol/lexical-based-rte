@@ -67,8 +67,6 @@ function serializeNode(node) {
 }
 
 export default function lexicalToHTML(editorState) {
-  console.log(editorState);
-
   const html = editorState.read(() => {
     const root = $getRoot();
 
