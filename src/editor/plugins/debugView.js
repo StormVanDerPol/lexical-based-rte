@@ -3,10 +3,11 @@ import { useState, useEffect, useMemo } from "react";
 import lexicalToHTML from "../utils/htmlSerializer";
 import HTMLToLexical from "../utils/lexicalSerializer";
 
-export default function DebugHTMLView() {
+export default function DebugView({ customFormatMap }) {
   const [editor] = useLexicalComposerContext();
 
   const [showHTML, setShowHTML] = useState(true);
+  const [showCFEMap, setShowCFEMap] = useState(true);
 
   const [HTML, setHTML] = useState("");
 
@@ -31,8 +32,8 @@ export default function DebugHTMLView() {
   return (
     <>
       <div className="my-5 p-2 rounded bg-gray-200 shadow-md border border-gray-400">
-        <button type="button" className="button primary sm" onClick={() => setShowHTML((b) => !b)}>
-          toggle html
+        <button type="button" className="button primary xs" onClick={() => setShowHTML((b) => !b)}>
+          -
         </button>
 
         {showHTML && (
@@ -49,6 +50,18 @@ export default function DebugHTMLView() {
           </>
         )}
       </div>
+
+      <pre className="bg-blue-900 text-white p-2 text-xs rounded my-2">
+        <button type="button" className="button primary xs" onClick={() => setShowCFEMap((b) => !b)}>
+          -
+        </button>
+        {showCFEMap && (
+          <>
+            <div>{`cfe state:\n`}</div>
+            {JSON.stringify(Array.from(customFormatMap), null, 4)}
+          </>
+        )}
+      </pre>
 
       <div className={`${isValid ? "bg-green-500" : "bg-red-500"} p-2 text-white text-xs rounded my-2`}>{message}</div>
 

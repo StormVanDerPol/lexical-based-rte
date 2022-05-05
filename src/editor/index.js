@@ -18,7 +18,7 @@ import theme from "./theme";
 import TreeViewPlugin from "./plugins/treeView";
 import ToolbarPlugin from "./plugins/toolbar";
 import AutoLinkPlugin from "./plugins/autoLink";
-import DebugHTMLView from "./plugins/debugHTMLView";
+import DebugView from "./plugins/debugView";
 import ImagesPlugin from "./plugins/imagesPlugin";
 
 import { ImageNode } from "./nodes/imageNode";
@@ -97,11 +97,8 @@ export default function Editor() {
           }
         }}
       />
-      <pre className="bg-blue-900 text-white p-2 text-xs rounded my-2">
-        {`cfe state:\n`}
-        {JSON.stringify(Array.from(customFormatMap), null, 4)}
-      </pre>
-      <DebugHTMLView />
+
+      <DebugView customFormatMap={customFormatMap} />
     </LexicalComposer>
   );
 }
