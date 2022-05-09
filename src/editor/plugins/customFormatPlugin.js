@@ -470,7 +470,7 @@ export function CustomFormatToolbarPlugin({ customFormats }) {
 
   React.useEffect(() => {
     return editor.registerUpdateListener(() => {
-      const customFormatKeys = getCustomFormatNodes(editor).map((node) => node.__customFormatKey);
+      const customFormatKeys = getCustomFormatNodes(editor).map((node) => node.getCustomFormatKey());
       setUsed(customFormatKeys);
     });
   }, [editor]);
