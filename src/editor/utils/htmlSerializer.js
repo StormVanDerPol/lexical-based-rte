@@ -32,7 +32,7 @@ const constructText = (string, bold, italic, underline) =>
 function serializeNode(node) {
   const type = node.getType();
 
-  console.log(node);
+  // console.log(node);
   const styleObject = {};
 
   let textAlign = null;

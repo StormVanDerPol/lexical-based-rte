@@ -70,5 +70,7 @@
 }
 
 .spancer {
+  
   letter-spacing: -2px;
+  @apply bg-blue-300
 }

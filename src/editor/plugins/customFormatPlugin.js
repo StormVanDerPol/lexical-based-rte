@@ -25,6 +25,8 @@ import {
   FOCUS_COMMAND,
   BLUR_COMMAND,
   $setSelection,
+  $createNodeSelection,
+  $createRangeSelection,
 } from "lexical";
 import LexicalComposer from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -41,13 +43,13 @@ const NESTED_CUSTOM_FORMAT_EDITOR_CONFIG = {
     console.error("[nested cfe]", e);
   },
   theme: {
-    paragraph: "inline bg-blue-200 rounded-sm",
+    paragraph: "inline bg-blue-300",
   },
 };
 
-// function Spancer() {
-//   return <span className="spancer"> </span>;
-// }
+function Spancer() {
+  return <span className="spancer"> </span>;
+}
 
 function CustomFormatDecoratorElement({ text, nodeKey, formats }) {
   const [editor] = useLexicalComposerContext();
@@ -65,14 +67,13 @@ function CustomFormatDecoratorElement({ text, nodeKey, formats }) {
 
   return (
     // spancers are neccessary for the android fix to work
-    // hopefully the div wrapper doesn't break any mobile shenanigans
     <>
-      {/* <Spancer /> */}
+      <Spancer />
       <LexicalComposer initialConfig={NESTED_CUSTOM_FORMAT_EDITOR_CONFIG}>
         <NestedCustomFormatEditorPlugin formats={formats} text={text} parentEditor={editor} nodeKey={nodeKey} />
         <OnUpdatePlugin handler={onUpdateHandler} />
       </LexicalComposer>
-      {/* <Spancer /> */}
+      <Spancer />
     </>
   );
 }
@@ -304,11 +305,25 @@ function registerNestedCustomFormatEditor(editor, text, parentEditor, nodeKey) {
       },
       COMMAND_PRIORITY_EDITOR,
     ),
-    /* prevent default behaviour */
+
     editor.registerCommand(
       KEY_ENTER_COMMAND,
       (event) => {
         event.preventDefault();
+        event.stopPropagation();
+        editor.update(() => $setSelection(null));
+        parentEditor.update(() => {
+          const node = $getNodeByKey(nodeKey);
+          const previousSiblings = node.getPreviousSiblings();
+
+          const [parentKey] = node.getParentKeys();
+
+          const range = $createRangeSelection();
+          range.anchor.set(parentKey, previousSiblings.length + 1, "element");
+          range.focus.set(parentKey, previousSiblings.length + 1, "element");
+
+          $setSelection(range);
+        });
       },
       COMMAND_PRIORITY_EDITOR,
     ),
