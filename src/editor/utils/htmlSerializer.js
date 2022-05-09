@@ -2,21 +2,29 @@ import { $getRoot } from "lexical";
 import encodeHTMLEntities from "./encodeHTMLEntities";
 import parseTextFormat from "./parseTextFormat";
 
-// function parseElementFormat(format) {
-//   switch (format) {
-//     case 0:
-//     case 1:
-//       return "left";
-//     case 2:
-//       return "center";
-//     case 3:
-//       return "right";
-//     case 4:
-//       return "justify";
-//     default:
-//       throw new Error(`[lexical to html]: element format ${format} is not ok`);
-//   }
-// }
+function parseElementFormat(format) {
+  switch (format) {
+    case 0:
+    case 1:
+      return "left";
+    case 2:
+      return "center";
+    case 3:
+      return "right";
+    case 4:
+      return "justify";
+    default:
+      throw new Error(`[lexical to html]: element format ${format} is not ok`);
+  }
+}
+
+function renderStyle(styleObject) {
+  const styleContent = Object.entries(styleObject)
+    .map(([key, value]) => `${key}:${value}`)
+    .join("; ");
+
+  return `style="${styleContent}"`;
+}
 
 const constructText = (string, bold, italic, underline) =>
   `${underline ? "<u>" : ""}${italic ? "<em>" : ""}${bold ? "<strong>" : ""}${encodeHTMLEntities(string)}${bold ? "</strong>" : ""}${italic ? "</em>" : ""}${underline ? "</u>" : ""}`;
@@ -24,24 +32,37 @@ const constructText = (string, bold, italic, underline) =>
 function serializeNode(node) {
   const type = node.getType();
 
+  console.log(node);
+  const styleObject = {};
+
+  let textAlign = null;
+
+  if (node.__format) {
+    textAlign = parseElementFormat(node.__format);
+    styleObject["text-align"] = textAlign;
+  }
+
+  const style = renderStyle(styleObject);
+
   switch (type) {
     case "root":
       return node.getChildren().map(serializeNode).join("");
     // element
     case "paragraph":
-      return `<p>${node.getChildren().map(serializeNode).join("") || "\u200B"}</p>`;
+      return `<p ${style}>${node.getChildren().map(serializeNode).join("") || "\u200B"}</p>`;
     case "listitem":
-      return `<li>${node.getChildren().map(serializeNode).join("")}</li>`;
+      return `<li ${style}>${node.getChildren().map(serializeNode).join("")}</li>`;
     case "list":
     case "heading": {
       const tagName = node.getTag();
-      return `<${tagName}>${node.getChildren().map(serializeNode).join("")}</${tagName}>`;
+      return `<${tagName} ${style}>${node.getChildren().map(serializeNode).join("")}</${tagName}>`;
     }
     case "quote":
-      return `<blockquote>${node.getChildren().map(serializeNode).join("")}</blockquote>`;
-    case "link": {
+      return `<blockquote ${style}>${node.getChildren().map(serializeNode).join("")}</blockquote>`;
+    case "link":
+    case "autolink": {
       const url = node.getURL();
-      return `<a href="${encodeHTMLEntities(url)}">${node.getChildren().map(serializeNode).join("")}</a>`;
+      return `<a ${style} href="${encodeHTMLEntities(url)}">${node.getChildren().map(serializeNode).join("")}</a>`;
     }
     // linebreak
     case "linebreak":

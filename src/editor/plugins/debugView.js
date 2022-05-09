@@ -1,5 +1,5 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import lexicalToHTML from "../utils/htmlSerializer";
 import HTMLToLexical from "../utils/lexicalSerializer";
 
@@ -17,18 +17,6 @@ export default function DebugView({ customFormatMap }) {
     });
   }, [editor]);
 
-  const editorStateStringFromHTML = useMemo(() => JSON.stringify(HTMLToLexical(HTML), null, 4), [HTML]);
-
-  const [isValid, message] = useMemo(() => {
-    try {
-      editor.parseEditorState(editorStateStringFromHTML);
-
-      return [true, "VALID"];
-    } catch (error) {
-      console.error(error);
-      return [false, `INVALID: ${error.message}`];
-    }
-  }, [editor, editorStateStringFromHTML]);
   return (
     <>
       <div className="my-5 p-2 rounded bg-gray-200 shadow-md border border-gray-400">
@@ -63,21 +51,15 @@ export default function DebugView({ customFormatMap }) {
         )}
       </pre>
 
-      <div className={`${isValid ? "bg-green-500" : "bg-red-500"} p-2 text-white text-xs rounded my-2`}>{message}</div>
-
-      <div className="rounded p-2 bg-black">
-        <button
-          type="button"
-          className="button primary mb-2 xs"
-          disabled={!isValid}
-          onClick={() => {
-            editor.setEditorState(editor.parseEditorState(editorStateStringFromHTML));
-          }}
-        >
-          Set editor state
-        </button>
-        <pre className="text-white text-xs">{editorStateStringFromHTML}</pre>
-      </div>
+      <button
+        type="button"
+        className="button primary xs"
+        onClick={() => {
+          editor.setEditorState(editor.parseEditorState(JSON.stringify(HTMLToLexical(HTML), null, 4)));
+        }}
+      >
+        reset editor state
+      </button>
     </>
   );
 }

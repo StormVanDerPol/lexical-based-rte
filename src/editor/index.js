@@ -7,7 +7,7 @@ import RichTextPlugin from "@lexical/react/LexicalRichTextPlugin";
 import LinkPlugin from "@lexical/react/LexicalLinkPlugin";
 import ListPlugin from "@lexical/react/LexicalListPlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-import AutoFocusPlugin from "@lexical/react/LexicalAutoFocusPlugin";
+// import AutoFocusPlugin from "@lexical/react/LexicalAutoFocusPlugin";
 
 import { LinkNode, AutoLinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
@@ -61,11 +61,13 @@ export default function Editor() {
       <AutoLinkPlugin />
       <ListPlugin />
       <HistoryPlugin />
-      <AutoFocusPlugin />
+      {/* <AutoFocusPlugin /> */}
       <ImagesPlugin />
       <TreeViewPlugin />
       <OnUpdatePlugin
         handler={(editorState, editor) => {
+          console.log(editorState._nodeMap);
+
           const editorCustomFormatMap = new Map(getCustomFormatNodes(editor).map((node) => [node.getCustomFormatKey(), node.getText()]));
           const newCustomFormatMap = new Map(Array.from(customFormatMap));
 
