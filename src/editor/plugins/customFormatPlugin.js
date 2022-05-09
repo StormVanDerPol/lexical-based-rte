@@ -280,7 +280,6 @@ function registerNestedCustomFormatEditor(editor, text, parentEditor, nodeKey) {
       },
       COMMAND_PRIORITY_EDITOR,
     ),
-
     editor.registerCommand(
       KEY_BACKSPACE_COMMAND,
       (event) => {
@@ -354,7 +353,6 @@ function registerNestedCustomFormatEditor(editor, text, parentEditor, nodeKey) {
       },
       COMMAND_PRIORITY_EDITOR,
     ),
-    // focus
     editor.registerCommand(
       FOCUS_COMMAND,
       () => {
@@ -364,7 +362,10 @@ function registerNestedCustomFormatEditor(editor, text, parentEditor, nodeKey) {
 
         parentEditor.update(() => {
           $setSelection(null);
-          if (!customFormatIsFocused) $getNodeByKey(nodeKey).setIsFocused(true);
+
+          const node = $getNodeByKey(nodeKey);
+
+          if (!customFormatIsFocused) node.setIsFocused(true);
         });
       },
       COMMAND_PRIORITY_EDITOR,

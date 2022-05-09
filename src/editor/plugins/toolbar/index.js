@@ -24,7 +24,7 @@ import $getSelectedNode from "../../utils/$getSelectedNode";
 import { INSERT_IMAGE_COMMAND } from "../imagesPlugin";
 import UrlIcon from "../../icons/url";
 import ImageIcon from "../../icons/image";
-import { FORMAT_CUSTOMFORMAT_COMMAND } from "../customFormatPlugin";
+import { FORMAT_CUSTOMFORMAT_COMMAND, getCustomFormatNodes } from "../customFormatPlugin";
 import FloatingLinkEditor from "./floatingLinkEditor";
 import BlockSelect from "./blockSelect";
 
@@ -39,10 +39,22 @@ export default function ToolbarPlugin() {
   const [canRedo, setCanRedo] = useState(false);
 
   const [currentBlock, setCurrentBlock] = useState("bullet list");
-  // const [selectedElementKey, setSelectedElementKey] = useState(null);
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
+
+    // --- DETECT FORMATS IN CFE --- //
+    const activeCustomFormatNode = getCustomFormatNodes(editor).find((node) => node.getIsFocused());
+
+    if (activeCustomFormatNode) {
+      const { bold, italic, underline } = activeCustomFormatNode.getFormats();
+
+      setIsBold(bold);
+      setIsItalic(italic);
+      setIsUnderline(underline);
+    }
+    // ------ //
+
     if ($isRangeSelection(selection)) {
       // ---  DETECT BLOCK NODE TYPE ---
       const anchorNode = selection.anchor.getNode();
@@ -115,6 +127,12 @@ export default function ToolbarPlugin() {
         },
         COMMAND_PRIORITY_LOW,
       ),
+      editor.registerDecoratorListener(() => {
+        // listen to CFE nodes
+        editor.getEditorState().read(() => {
+          updateToolbar();
+        });
+      }),
     );
   }, [editor, updateToolbar]);
 
