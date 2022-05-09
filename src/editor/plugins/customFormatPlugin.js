@@ -289,6 +289,20 @@ function registerNestedCustomFormatEditor(editor, text, parentEditor, nodeKey) {
           return false;
         }
         event.preventDefault();
+
+        const shouldBreakOut = editor.getEditorState().read(() => {
+          const firstChild = $getRoot().getFirstChild();
+          const firstTextNode = firstChild.getFirstChild();
+          const firstTextNodeKey = firstTextNode.getKey();
+
+          return selection.isCollapsed() && firstTextNodeKey === selection.anchor.key && selection.anchor.offset === 0;
+        });
+
+        if (shouldBreakOut) {
+          $moveCharacter(selection, false, true);
+          return false;
+        }
+
         return editor.dispatchCommand(DELETE_CHARACTER_COMMAND, true);
       },
       COMMAND_PRIORITY_EDITOR,
