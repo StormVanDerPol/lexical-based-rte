@@ -25,8 +25,8 @@ import {
   FOCUS_COMMAND,
   BLUR_COMMAND,
   $setSelection,
-  $createNodeSelection,
   $createRangeSelection,
+  $isElementNode,
 } from "lexical";
 import LexicalComposer from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -305,12 +305,11 @@ function registerNestedCustomFormatEditor(editor, text, parentEditor, nodeKey) {
       },
       COMMAND_PRIORITY_EDITOR,
     ),
-
     editor.registerCommand(
       KEY_ENTER_COMMAND,
       (event) => {
         event.preventDefault();
-        event.stopPropagation();
+        event.stopPropagation(); // prevent parent editor from adding a linebreak
         editor.update(() => $setSelection(null));
         parentEditor.update(() => {
           const node = $getNodeByKey(nodeKey);
@@ -378,6 +377,14 @@ function registerNestedCustomFormatEditor(editor, text, parentEditor, nodeKey) {
       },
       COMMAND_PRIORITY_EDITOR,
     ),
+    editor.registerTextContentListener((textContent) => {
+      if (!textContent)
+        editor.update(() => {
+          const paragraph = $getRoot().getFirstChild();
+          if (!$isElementNode(paragraph)) return;
+          paragraph.append($createTextNode(" "));
+        });
+    }),
   );
   hydrateNestedCustomFormatEditor(editor, text);
   return removeListener;
